@@ -1,4 +1,4 @@
-package com.TeamProject.YCtechAcademy.YCtechAcademyTeamProject;
+package com.YCtechAcademy.bogosaja;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

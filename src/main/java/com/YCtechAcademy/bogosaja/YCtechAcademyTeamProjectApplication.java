@@ -1,4 +1,4 @@
-package com.TeamProject.YCtechAcademy.YCtechAcademyTeamProject;
+package com.YCtechAcademy.bogosaja;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

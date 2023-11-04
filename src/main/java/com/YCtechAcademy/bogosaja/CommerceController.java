@@ -1,4 +1,4 @@
-package com.TeamProject.YCtechAcademy.YCtechAcademyTeamProject;
+package com.YCtechAcademy.bogosaja;
 
 
 import org.springframework.http.ResponseEntity;
