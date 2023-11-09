@@ -72,6 +72,11 @@ public class Member extends BaseEntity implements UserDetails {
 	}
 
 	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
 	public boolean isAccountNonExpired() {
 		return false;
 	}
