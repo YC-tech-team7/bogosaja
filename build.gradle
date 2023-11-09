@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.16'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
 group = 'com.TeamProject.YCtechAcademy'
@@ -16,12 +17,30 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'mysql:mysql-connector-java'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// jib 추가
+jib {
+	from {
+		image = 'openjdk:17-alpine'
+	}
+	to {
+		image = '523395038227.dkr.ecr.ap-northeast-2.amazonaws.com/bogosaja'
+		credHelper = 'ecr-login'
+		tags = ['latest']
+	}
+	container {
+		jvmFlags = ['-Xms512m']
+		format = 'OCI'
+	}
 }

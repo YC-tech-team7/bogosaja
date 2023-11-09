@@ -11,6 +11,11 @@
 //@RequestMapping("/api")
 //public class CommerceController {
 //
+//    @GetMapping("/")
+//    public String
+//
+//}
+//
 //
 //    @DeleteMapping("/users/{userId}")
 //    public ResponseEntity<String> deleteUser(@PathVariable String userId) {
@@ -56,4 +61,5 @@
 //    public ResponseEntity<String> getMainPage() {
 //        // 메인페이지 로직 구현
 //    }
-//}
+////}
+
