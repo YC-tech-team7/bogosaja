@@ -1,6 +1,7 @@
 package com.YCtechAcademy.bogosaja.member.domain;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,19 +22,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Data
+@NoArgsConstructor
 @Table(name = "member")
+@Builder
 public class Member extends BaseEntity implements UserDetails {
 
 	@Id
 	@GeneratedValue(generator = "uuid-hibernate-generator")
 	@GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
 	private UUID id;
 
 	@Column(name="email", nullable = false, unique = true, columnDefinition = "varchar(50)")
@@ -45,12 +50,12 @@ public class Member extends BaseEntity implements UserDetails {
 	@Column(name = "nickname", unique = true, columnDefinition = "varchar(50)")
 	private String nickname;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@Builder.Default
-	private Set<String> roles = new HashSet<>();
+
+	@Column(name = "roles", nullable = false, columnDefinition = "varchar(40)")
+	private Roles roles;
 
 	@Builder
-	public Member(UUID id, String email, String password, String nickname, Set<String> roles) {
+	public Member(UUID id, String email, String password, String nickname, Roles roles) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
@@ -60,7 +65,7 @@ public class Member extends BaseEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return Collections.emptySet();
 		// return this.roles.stream()
 		// 	.map(SimpleGrantedAuthority::new)
 		// 	.collect(Collectors.toSet());
