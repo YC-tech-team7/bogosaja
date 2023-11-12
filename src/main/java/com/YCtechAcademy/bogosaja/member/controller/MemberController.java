@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/members")
 public class MemberController {
 
    private final MemberService memberService;
@@ -42,6 +42,8 @@ public class MemberController {
    // public ResponseEntity<String> logout() {
    //     // 로그아웃 로직 구현
    // }
+
+
 
 }
 

@@ -24,7 +24,7 @@ public class SignUpRequest {
 
 	private String nickname;
 
-	private Roles roles = Roles.ROLE_USER;
+	private Set<Roles> roles = new HashSet<>(Roles.ROLE_USER.ordinal()); // todo 확인필요
 
 	public static Member toEntity(SignUpRequest signUpRequest) {
 		return Member.builder()

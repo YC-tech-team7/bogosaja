@@ -50,12 +50,13 @@ public class Member extends BaseEntity implements UserDetails {
 	@Column(name = "nickname", unique = true, columnDefinition = "varchar(50)")
 	private String nickname;
 
-
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Builder.Default
 	@Column(name = "roles", nullable = false, columnDefinition = "varchar(40)")
-	private Roles roles;
+	private Set<Roles> roles = new HashSet<>();
 
 	@Builder
-	public Member(UUID id, String email, String password, String nickname, Roles roles) {
+	public Member(UUID id, String email, String password, String nickname, Set<Roles> roles) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
