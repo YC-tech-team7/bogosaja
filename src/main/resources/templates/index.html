@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BOGO-SAJA</title>
+</head>
+<body>
+<a th:href="@{/members/auth/signUp}">회원가입</a>
+<a th:href="@{/members/auth/signIn}">로그인</a>
+<!--<a th:href="../templates/signInForm.html" role="button" th:if="${#request.getCookies()== null}">로그인</a>-->
+<!--<a th:href="/" role="button" th:if="${#request.getCookies()!= null}">로그아웃</a>-->
+</body>
+</html>

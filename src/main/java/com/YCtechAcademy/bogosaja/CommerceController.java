@@ -1,11 +1,9 @@
 package com.YCtechAcademy.bogosaja;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-//User 타입과 product타입은 아직 만들지 않았습니다.
-@RestController
+@Controller
 public class CommerceController {
 
    @GetMapping("/")

@@ -2,37 +2,33 @@ package com.YCtechAcademy.bogosaja.member.domain;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@DynamicUpdate
 @Data
 @NoArgsConstructor
 @Table(name = "member")
-@Builder
 public class Member extends BaseEntity implements UserDetails {
 
 	@Id
@@ -50,26 +46,34 @@ public class Member extends BaseEntity implements UserDetails {
 	@Column(name = "nickname", unique = true, columnDefinition = "varchar(50)")
 	private String nickname;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@Builder.Default
-	@Column(name = "roles", nullable = false, columnDefinition = "varchar(40)")
-	private Set<Roles> roles = new HashSet<>();
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role", nullable = false, columnDefinition = "varchar(40)")
+	private Role role = Role.ROLE_USER;
+
+	// @Column(name = "provider", columnDefinition = "varchar(40)")
+	// private String provider; //어떤 OAuth인지(google, naver 등)
+	//
+	// @Column(name = "provideId", columnDefinition = "varchar(40)")
+	// private String provideId; // 해당 OAuth 의 key(id)
+
+	public void update(String email, String password, String nickname) {
+		this.email = email;
+		this.password = password;
+		this.nickname = nickname;
+	}
 
 	@Builder
-	public Member(UUID id, String email, String password, String nickname, Set<Roles> roles) {
+	public Member(UUID id, String email, String password, String nickname, Role role) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
-		this.roles = roles;
+		this.role = role;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.emptySet();
-		// return this.roles.stream()
-		// 	.map(SimpleGrantedAuthority::new)
-		// 	.collect(Collectors.toSet());
+		return Collections.singleton(new SimpleGrantedAuthority(this.role.getRole()));
 	}
 
 	@Override

@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: ${LOCAL_DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
+    hibernate:
+      ddl-auto: create
+
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+        use_sql_comments: true
+
+    redis:
+      host: localhost
+      port: 6379
+
+
+#  security:
+#    jwt:
+#      secret: fpvuvttzKZKGmQ3UoD0QpU7oSDAmCKb8X6l78RULm1Rm01R5Itcg5C8Q9me5sffF
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+#            client-id: ${OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID}
+#            client-secret: ${OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET}
+            client-id: 194009366801-4ln9i815m0poni27gpggf149dvag2q7s.apps.googleusercontent.com
+            client-secret: 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
+
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+
+
+jwt:
+  secret: fpvuvttzKZKGmQ3UoD0QpU7oSDAmCKb8X6l78RULm1Rm01R5Itcg5C8Q9me5sffF
+
+logging.level:
+  org.hibernate.SQL: debug
+  #  org.hibernate.type: trace
+  org.springframework.security: debug

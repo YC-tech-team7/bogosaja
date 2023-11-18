@@ -1,11 +1,7 @@
 package com.YCtechAcademy.bogosaja.member.dto;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.validation.constraints.Email;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
-import com.YCtechAcademy.bogosaja.member.domain.Roles;
+import com.YCtechAcademy.bogosaja.member.domain.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,14 +20,14 @@ public class SignUpRequest {
 
 	private String nickname;
 
-	private Set<Roles> roles = new HashSet<>(Roles.ROLE_USER.ordinal()); // todo 확인필요
+	private Role role = Role.ROLE_USER;
 
 	public static Member toEntity(SignUpRequest signUpRequest) {
 		return Member.builder()
 			.email(signUpRequest.email)
 			.password(signUpRequest.password)
 			.nickname(signUpRequest.nickname)
-			.roles(signUpRequest.roles)
+			.role(signUpRequest.role)
 			.build();
 	}
 }

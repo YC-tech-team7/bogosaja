@@ -1,18 +1,16 @@
 package com.YCtechAcademy.bogosaja.member.domain;
 
-public enum Roles {
+import lombok.Getter;
+
+public enum Role {
 	ROLE_USER("ROLE_USER"),
 	ROLE_ANONYMOUS("ROLE_ANONYMOUS"),
 	ROLE_ADMIN("ROLE_ADMIN");
 
-	String roles;
+	@Getter String role;
 
-	Roles(String roles) {
-		this.roles = roles;
-	}
-
-	public String value() {
-		return roles;
+	Role(String role) {
+		this.role = role;
 	}
 }
 
