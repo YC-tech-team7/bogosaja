@@ -1,2 +1,2 @@
-# bogosaja
-YC Tech academy 7조 보고사자 backend
+# shop
+쇼핑몰 웹 사이트

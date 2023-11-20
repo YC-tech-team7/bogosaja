@@ -1,67 +1,87 @@
-plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.16'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'com.google.cloud.tools.jib' version '3.4.0'
+buildscript {
+	//Add
+	ext {
+		queryDslVersion = "5.0.0"
+	}
 }
 
-group = 'com.TeamProject.YCtechAcademy'
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.17'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+}
+
+group = 'com.shop'
 version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
 }
 
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.9'
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	querydsl.extendsFrom compileClasspath
 }
+
 
 repositories {
 	mavenCentral()
 }
 
-dependencies {
-	//Spring Boot
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	implementation 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	//Security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-	//Test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'com.h2database:h2'
 
+
+
+
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-// jib 추가
-jib {
-	from {
-		image = 'openjdk:17-alpine'
-	}
-	to {
-		image = '523395038227.dkr.ecr.ap-northeast-2.amazonaws.com/bogosaja'
-		credHelper = 'ecr-login'
-		tags = ['latest']
-	}
-	container {
-		jvmFlags = ['-Xms512m']
-		format = 'OCI'
-	}
 }
