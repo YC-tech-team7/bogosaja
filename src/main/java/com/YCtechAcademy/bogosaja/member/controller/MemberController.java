@@ -2,13 +2,13 @@ package com.YCtechAcademy.bogosaja.member.controller;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
@@ -20,7 +20,10 @@ import com.YCtechAcademy.bogosaja.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
@@ -34,30 +37,28 @@ public class MemberController {
     }
 
    @PostMapping("/auth/signUp")
-   public String signUp(@RequestBody SignUpRequest signUpRequest) {
-       memberService.signUp(signUpRequest);
-       // 회원가입 완료 페이지
-       return "member/signInForm";
+   public String signUp(@ModelAttribute SignUpRequest signUpRequest) {
+        memberService.signUp(signUpRequest);
+        // 회원가입 완료 페이지
+        return "redirect:/";
    }
 
     @GetMapping("/auth/signIn")
-    // 로그인 화면
     public String signInForm(){
+        // 로그인 화면
         return "member/signInForm";
     }
 
     @PostMapping("/auth/signIn")
-    public String signIn(@RequestBody SignInRequest signInRequest, HttpServletResponse response) {
+    public String signIn(@ModelAttribute SignInRequest signInRequest, HttpServletResponse response) {
+        log.info("email={}, password={}",signInRequest.email(), signInRequest.password());
         TokenInfo tokenInfo = memberService.signIn(signInRequest.email(), signInRequest.password());
-
         Cookie accessToken = generateCookie("accessToken", tokenInfo.accessToken());
         Cookie refreshToken = generateCookie("refreshToken", tokenInfo.refreshToken());
 
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
-
-        return "member/signUpForm";
-
+        return "redirect:/";
     }
 
     private Cookie generateCookie(String name, String value) {
@@ -69,23 +70,45 @@ public class MemberController {
         return cookie;
     }
 
+    @PostMapping("/auth/signOut")
+    public String signOut(HttpServletResponse response) {
+
+        Cookie accessToken = generateCookie("accessToken", null);
+        Cookie refreshToken = generateCookie("refreshToken", null);
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
+
+        return "redirect:/";
+}
+
+    @GetMapping("/delete")
+    public String deleteForm() {
+        return "member/deleteForm";
+    }
+
     @PutMapping("/delete")
-    public String delete(@RequestBody DeleteRequest deleteRequest, @AuthenticationPrincipal Member member) {
-       memberService.delete(deleteRequest, member);
+    public String delete(@ModelAttribute DeleteRequest deleteRequest, @AuthenticationPrincipal Member member) {
+        memberService.delete(deleteRequest, member);
         return "redirect:/";
     }
+
     @GetMapping("/update")
     public String updateForm(){
-       // 회원정보 수정 화면
        return "member/updateForm";
     }
+
     @PutMapping("/update")
-    public String update(@RequestBody UpdateRequest updateRequest, @AuthenticationPrincipal Member member) {
+    public String update(@ModelAttribute UpdateRequest updateRequest, @AuthenticationPrincipal Member member) {
        memberService.update(updateRequest, member);
-        return "redirect:/"; // todo 바꾼정보 반영된채로 updateform으로 가도록하기...
+       return "redirect:/"; // todo 바꾼정보 반영된채로 updateform으로 가도록하기...
     }
 
-
+    @GetMapping("/db")
+    public String db(Model model){
+        List<SignUpRequest> memberList = memberService.findAll();
+        model.addAttribute("memberList", memberList);
+        return "member/members";
+    }
 
 }
 

@@ -52,7 +52,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 				.email(email)
 				.password(passwordEncoder.encode(UUID.randomUUID().toString()))
 				.nickname(oAuth2User.getName())
-				.role(Role.ROLE_USER)
+				.role(Role.USER)
 					.build();
 			memberRepository.save(newMember);
 		}

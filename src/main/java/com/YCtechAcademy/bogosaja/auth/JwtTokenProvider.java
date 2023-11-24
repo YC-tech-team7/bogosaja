@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 
+import com.YCtechAcademy.bogosaja.member.service.CustomUserDetailsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import com.YCtechAcademy.bogosaja.auth.domain.JwtCode;
@@ -29,13 +32,15 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 	private final Key key;
-
-	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+	private final UserDetailsService UserDetailsService;
+	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, UserDetailsService UserDetailsService) {
 		byte[] keyBytes = Base64.getDecoder().decode(secretKey.getBytes());
 		this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+		this.UserDetailsService = UserDetailsService;
 	}
 
 	public TokenInfo generateToken(Authentication authentication, String email) {
@@ -67,6 +72,7 @@ public class JwtTokenProvider {
 
 	// JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
 	public Authentication getAuthentication(String accessToken) {
+		log.info("현재 누가 로그인 되어있나 확인 중");
 		// 토큰 복호화
 		Claims claims = parseClaims(accessToken);
 
@@ -74,15 +80,10 @@ public class JwtTokenProvider {
 			throw new AccessDeniedException("권한 정보가 없는 토큰입니다.");
 		}
 
-		// 클레임에서 권한 정보 가져오기
-		Collection<? extends GrantedAuthority> authorities =
-			Arrays.stream(claims.get("auth").toString().split(","))
-				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
+		UserDetails userDetails = UserDetailsService.loadUserByUsername(claims.getSubject());
+		log.info("get:" +userDetails.getAuthorities());
 
-		// UserDetails 객체를 만들어서 Authentication 리턴
-		UserDetails principal = new User(claims.getSubject(), "", authorities);
-		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+		return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
 	}
 
 	// 토큰 복호화 메서드
@@ -94,6 +95,8 @@ public class JwtTokenProvider {
 		}
 	}
 
+
+	// 토큰 검증
 	public JwtCode validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -106,12 +109,14 @@ public class JwtTokenProvider {
 			return JwtCode.DENIED;
 		}
 	}
+
+	// 토큰을 쿠키로 변환하는 기능
 	public javax.servlet.http.Cookie generateCookie(String from, String token) {
 		javax.servlet.http.Cookie cookie = new Cookie(from, token);
 
 		cookie.setPath("/");
 		cookie.setHttpOnly(true); // XSS 공격을 막기 위한 설정
-		cookie.setSecure(true);
+		cookie.setSecure(false);
 
 		return cookie;
 	}

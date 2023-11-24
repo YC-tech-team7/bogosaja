@@ -2,21 +2,19 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SignIn Page</title>
+    <title>Delete Page</title>
 </head>
 <body>
-<h3> 로그인하세요 </h3>
-<form th:object="${SignInRequest}" method="post">
-    <label for="email">이메일:</label>
-    <input type="email" id="email" name="email" required/>
 
-    <br/>
+<h3> 비밀번호를 입력하면 탈퇴할 수 있습니다. </h3>
+<form th:object="${deleteRequest}" method="post" >
 
     <label for="password">비밀번호:</label>
     <input type="password" id="password" name="password" required/>
 
     <br/>
-    <button type="submit">로그인</button>
+
+    <button type="submit">탈퇴하기</button>
 </form>
 </body>
 </html>

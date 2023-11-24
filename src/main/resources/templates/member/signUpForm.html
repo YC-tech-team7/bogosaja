@@ -2,23 +2,23 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입</title>
-
-
-
+    <title>SignUp Page</title>
 </head>
 <body>
-
-<h2>회원가입</h2>
-
-<form id="signupForm">
+<h3> 회원가입하세요 </h3>
+<form th:object="${SignUpRequest}" method="post" >
     <label for="email">이메일:</label>
     <input type="email" id="email" name="email" required/>
 
     <br/>
 
-    <label for="password">비밀번호:</label>
-    <input type="password" id="password" name="password" required/>
+    <label for="password1">비밀번호1:</label>
+    <input type="password" id="password1" name="password1" required/>
+
+    <br/>
+
+    <label for="password2">비밀번호2:</label>
+    <input type="password" id="password2" name="password2" required/>
 
     <br/>
 
@@ -26,40 +26,7 @@
     <input type="text" id="nickname" name="nickname" required/>
 
     <br/>
-
-    <button type="button" onclick="signUp()">회원가입</button>
+    <button type="submit">가입하기</button>
 </form>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script>
-    function signUp() {
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
-        var nickname = document.getElementById('nickname').value;
-
-        var signUpRequest = {
-            email: email,
-            password: password,
-            nickname: nickname
-        };
-
-        // AJAX를 사용하여 서버에 POST 요청을 보냄
-        $.ajax({
-            type: 'POST',
-            url: '/members/auth/signUp',
-            contentType: 'application/json',
-            data: JSON.stringify(signUpRequest),
-            success: function (response) {
-                // 회원가입이 성공하면, 여기에서 리다이렉트 또는 다른 처리를 수행할 수 있음
-                console.log("성공")
-                // window.location.href = '/member/signInForm';
-            },
-            error: function (error) {
-                console.log("err")
-                console.error('Error during signUp:', error);
-            }
-        });
-    }
-</script>
 </body>
-
 </html>

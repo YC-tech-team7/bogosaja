@@ -23,8 +23,8 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -33,6 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		log.info("필터 실행 중");
 		Optional<String> accessToken = extractTokenFromCookie(request, "accessToken");
 		Optional<String> refreshToken = extractTokenFromCookie(request, "refreshToken");
 
@@ -40,10 +41,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get()) == JwtCode.ACCESS) {
 			// 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
 			Authentication authentication = jwtTokenProvider.getAuthentication(accessToken.get());
+			log.info("auth: " +authentication);
 			// SecurityContext 에 Authentication 객체를 저장합니다.
 			SecurityContextHolder.getContext().setAuthentication(authentication);
+			log.info("유효한 토큰입니다.");
 		} else if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get()) == JwtCode.EXPIRED) {
-			log.info("Access token expired");
 
 			// refresh token 검증
 			if (refreshToken.isPresent() && jwtTokenProvider.validateToken(refreshToken.get()) == JwtCode.ACCESS) {
@@ -52,12 +54,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 				Claims claims = jwtTokenProvider.parseClaims(accessToken.get());
 
-				if (savedToken.isPresent() && claims.get("email").equals(savedToken.get().getMember().getEmail())) {
+				if (savedToken.isPresent() && claims.get("email").equals(savedToken.get().getMember().getUsername())) {
 					// accessToken 으로 부터 Authentication 객체 추출
 					Authentication authentication = jwtTokenProvider.getAuthentication(accessToken.get());
 
 					// email 을 추출하여 accessToken, refreshToken 생성
-					TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, savedToken.get().getMember().getEmail());
+					TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, savedToken.get().getMember().getUsername());
 
 					// 인증 객체 설정
 					SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -69,7 +71,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 					response.addCookie(jwtTokenProvider.generateCookie("refreshToken", tokenInfo.refreshToken()));
 					response.addCookie(jwtTokenProvider.generateCookie("accessToken", tokenInfo.accessToken()));
 
-					log.info("Reissue access token");
 				}
 			}
 		}
@@ -94,7 +95,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		String path = request.getServletPath();
 
 		// filter 에서 제외한 url 목록
-		String[] excludedPaths = { "/members/auth/login", "/members/auth/signUp", "/h2-console"};
+		String[] excludedPaths = { "/members/auth/signIn", "/members/auth/signUp", "/members/db"};
 
 		for (String excludedPath : excludedPaths) {
 			if (path.startsWith(excludedPath)) {

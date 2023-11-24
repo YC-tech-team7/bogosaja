@@ -1,8 +1,6 @@
 package com.YCtechAcademy.bogosaja.member.domain;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,7 +25,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @DynamicUpdate
-@Data
 @NoArgsConstructor
 @Table(name = "member")
 public class Member extends BaseEntity implements UserDetails {
@@ -48,16 +46,10 @@ public class Member extends BaseEntity implements UserDetails {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false, columnDefinition = "varchar(40)")
-	private Role role = Role.ROLE_USER;
+	private Role role;
 
-	// @Column(name = "provider", columnDefinition = "varchar(40)")
-	// private String provider; //어떤 OAuth인지(google, naver 등)
-	//
-	// @Column(name = "provideId", columnDefinition = "varchar(40)")
-	// private String provideId; // 해당 OAuth 의 key(id)
 
-	public void update(String email, String password, String nickname) {
-		this.email = email;
+	public void update(String password, String nickname) {
 		this.password = password;
 		this.nickname = nickname;
 	}
@@ -73,7 +65,11 @@ public class Member extends BaseEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(new SimpleGrantedAuthority(this.role.getRole()));
+		Role role = this.role;
+		String authority = role.getAuthority();
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(authority)); // 권한을 simpleGrantedAuthority로 추상화하여 관리함
+		return authorities;
 	}
 
 	@Override
@@ -104,5 +100,15 @@ public class Member extends BaseEntity implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public static SignUpRequest toDTO(Member member) {
+		return SignUpRequest.builder()
+				.email(member.email)
+				.password1(member.password)
+				.password2(member.password)
+				.nickname(member.nickname)
+				.role(member.role)
+				.build();
 	}
 }
