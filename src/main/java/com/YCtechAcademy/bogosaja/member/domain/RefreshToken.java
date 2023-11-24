@@ -2,11 +2,7 @@ package com.YCtechAcademy.bogosaja.member.domain;
 
 import java.util.UUID;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,9 +13,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RefreshToken {
+
 	@Id
 	@GeneratedValue(generator = "uuid-hibernate-generator")
 	@GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
 	private UUID id;
 
 	private String refreshToken;

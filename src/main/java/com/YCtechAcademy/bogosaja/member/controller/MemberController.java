@@ -2,6 +2,7 @@ package com.YCtechAcademy.bogosaja.member.controller;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.YCtechAcademy.bogosaja.member.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
-import com.YCtechAcademy.bogosaja.member.dto.DeleteRequest;
-import com.YCtechAcademy.bogosaja.member.dto.SignInRequest;
-import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
-import com.YCtechAcademy.bogosaja.member.dto.UpdateRequest;
 import com.YCtechAcademy.bogosaja.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,12 +33,12 @@ public class MemberController {
         return "member/signUpForm";
     }
 
-   @PostMapping("/auth/signUp")
-   public String signUp(@ModelAttribute SignUpRequest signUpRequest) {
+    @PostMapping("/auth/signUp")
+    public String signUp(@ModelAttribute SignUpRequest signUpRequest) {
         memberService.signUp(signUpRequest);
         // 회원가입 완료 페이지
         return "redirect:/";
-   }
+    }
 
     @GetMapping("/auth/signIn")
     public String signInForm(){
@@ -53,6 +50,7 @@ public class MemberController {
     public String signIn(@ModelAttribute SignInRequest signInRequest, HttpServletResponse response) {
         log.info("email={}, password={}",signInRequest.email(), signInRequest.password());
         TokenInfo tokenInfo = memberService.signIn(signInRequest.email(), signInRequest.password());
+        log.info("7");
         Cookie accessToken = generateCookie("accessToken", tokenInfo.accessToken());
         Cookie refreshToken = generateCookie("refreshToken", tokenInfo.refreshToken());
 
@@ -79,28 +77,43 @@ public class MemberController {
         response.addCookie(refreshToken);
 
         return "redirect:/";
-}
+    }
 
     @GetMapping("/delete")
     public String deleteForm() {
         return "member/deleteForm";
     }
 
-    @PutMapping("/delete")
-    public String delete(@ModelAttribute DeleteRequest deleteRequest, @AuthenticationPrincipal Member member) {
+    @PostMapping("/delete")
+    public String delete(@ModelAttribute DeleteRequest deleteRequest, @AuthenticationPrincipal Member member, HttpServletResponse response) {
         memberService.delete(deleteRequest, member);
+        Cookie accessToken = generateCookie("accessToken", null);
+        Cookie refreshToken = generateCookie("refreshToken", null);
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
         return "redirect:/";
     }
 
     @GetMapping("/update")
     public String updateForm(){
-       return "member/updateForm";
+       return "member/updateUserInfoForm";
     }
 
-    @PutMapping("/update")
+    @GetMapping("/reset")
+    public String resetForm(){
+        return "member/resetPasswordForm";
+    }
+
+    @PostMapping("/update")
     public String update(@ModelAttribute UpdateRequest updateRequest, @AuthenticationPrincipal Member member) {
        memberService.update(updateRequest, member);
-       return "redirect:/"; // todo 바꾼정보 반영된채로 updateform으로 가도록하기...
+       return "redirect:/";
+    }
+
+    @PostMapping("/reset")
+    public String update(@ModelAttribute ResetRequest resetRequest, @AuthenticationPrincipal Member member) {
+        memberService.resetPw(resetRequest, member);
+        return "redirect:/";
     }
 
     @GetMapping("/db")

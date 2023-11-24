@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.YCtechAcademy.bogosaja.member.dto.ResetRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -25,6 +27,7 @@ import com.YCtechAcademy.bogosaja.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -36,10 +39,9 @@ public class MemberService {
 
 	private void validateDuplicateMember(SignUpRequest signUpRequest) {
 		Optional<Member> member = memberRepository.findByEmail(signUpRequest.getEmail());
-		if (!member.isEmpty()) {
+		if (member.isPresent()) {
 			throw new IllegalStateException("이미 가입된 회원입니다!");
 		}
-		System.out.println("신규회원입니다.");
 	}
 
 	@Transactional
@@ -57,7 +59,7 @@ public class MemberService {
 
 		// 1. 받은 email이 실제로 존재하는 회원인지 확인
 		Optional<Member> member = memberRepository.findByEmail(email);
-		System.out.println("나야ㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑㅑ");
+
 		// 2. 사용자가 없는 경우 AccessDeniedException 발생
 		if (member.isEmpty()) {
 			throw new AccessDeniedException("존재하지 않는 회원입니다");
@@ -75,32 +77,48 @@ public class MemberService {
 		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
 
 		// 6. refresh token 업데이트 or 생성
-		refreshTokenRepository.findByMember_Email(member.get().getUsername())
-			.ifPresentOrElse(
-				refreshToken -> {
-					refreshToken.setRefreshToken(tokenInfo.refreshToken());
-					refreshTokenRepository.save(refreshToken);
-				}, () -> refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), member.get()))
-			);
+		Optional<RefreshToken> refreshToken = refreshTokenRepository.findByMember_Email(email);
+
+		if(refreshToken.isPresent()){
+			// 존재한다면
+			refreshToken.get().setRefreshToken(tokenInfo.refreshToken());
+		}else{
+			refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), member.get()));
+		}
 
 		return tokenInfo;
 	}
 
 	@Transactional
-	public void delete(DeleteRequest deleteRequest, Member member) {
-		if (!passwordEncoder.matches(deleteRequest.password(), member.getPassword())) {
+	public void delete(DeleteRequest deleteRequest, Member member1) {
+		if (!passwordEncoder.matches(deleteRequest.password(), member1.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
+		RefreshToken refreshToken = refreshTokenRepository.findByMember_Email(member1.getUsername()).orElseThrow();
+		refreshTokenRepository.delete(refreshToken);
+		Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
 		memberRepository.delete(member); // todo : 데이터삭제? 삭제필드 수정? 중 어떻게
 	}
+
 	@Transactional
-	public void update(UpdateRequest updateRequest, Member member) {
-		// 입력받은 현재 비밀번호와 저장된 비밀번호를 비교
-		if (!updateRequest.password1().equals(updateRequest.password2())) {
+	public void resetPw(ResetRequest resetRequest, Member member1) {
+		// 입력받은 비밀번호끼리 비교
+		if (!resetRequest.password1().equals(resetRequest.password2())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
+		Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
+
 		// 새 비밀번호로 업데이트
-		member.update(passwordEncoder.encode(updateRequest.password1()), updateRequest.nickname());
+		member.resetPassword(passwordEncoder.encode(resetRequest.password1()));
+	}
+
+	@Transactional
+	public void update(UpdateRequest updateRequest, Member member1) {
+		// 닉네임 변경
+		Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
+
+		// 새 닉네임으로 업데이트
+		member.update(updateRequest.nickname());
 	}
 
 	public List<SignUpRequest> findAll(){

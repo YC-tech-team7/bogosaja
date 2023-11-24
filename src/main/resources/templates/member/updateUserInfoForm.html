@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update UserInfo Page</title>
+</head>
+<body>
+
+<h3> 닉네임을 변경할 수 있습니다. </h3>
+<form th:object="${UpdateRequest}" th:method="post" >
+
+    <label for="nickname">변경할 닉네임:</label>
+    <input type="text" id="nickname" name="nickname" required/>
+
+    <br/>
+    <button type="submit">변경하기</button>
+</form>
+</body>
+</html>

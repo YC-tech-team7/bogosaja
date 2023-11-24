@@ -4,9 +4,7 @@ import java.security.Key;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -18,11 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import com.YCtechAcademy.bogosaja.auth.domain.JwtCode;
@@ -36,11 +30,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenProvider {
 	private final Key key;
-	private final UserDetailsService UserDetailsService;
-	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, UserDetailsService UserDetailsService) {
+	private final CustomUserDetailsService customUserDetailsService;
+	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService) {
 		byte[] keyBytes = Base64.getDecoder().decode(secretKey.getBytes());
 		this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
-		this.UserDetailsService = UserDetailsService;
+		this.customUserDetailsService = customUserDetailsService;
 	}
 
 	public TokenInfo generateToken(Authentication authentication, String email) {
@@ -80,7 +74,7 @@ public class JwtTokenProvider {
 			throw new AccessDeniedException("권한 정보가 없는 토큰입니다.");
 		}
 
-		UserDetails userDetails = UserDetailsService.loadUserByUsername(claims.getSubject());
+		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 		log.info("get:" +userDetails.getAuthorities());
 
 		return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());

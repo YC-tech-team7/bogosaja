@@ -49,9 +49,11 @@ public class Member extends BaseEntity implements UserDetails {
 	private Role role;
 
 
-	public void update(String password, String nickname) {
-		this.password = password;
+	public void update(String nickname) {
 		this.nickname = nickname;
+	}
+	public void resetPassword(String password) {
+		this.password = password;
 	}
 
 	@Builder
@@ -65,11 +67,10 @@ public class Member extends BaseEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Role role = this.role;
-		String authority = role.getAuthority();
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority(authority)); // 권한을 simpleGrantedAuthority로 추상화하여 관리함
-		return authorities;
+		Collection<GrantedAuthority> roles = new ArrayList<>();
+		String authority = this.role.getAuthority();
+		roles.add(new SimpleGrantedAuthority(authority));
+		return roles;
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class Member extends BaseEntity implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
