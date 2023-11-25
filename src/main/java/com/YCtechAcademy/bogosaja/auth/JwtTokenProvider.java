@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 
-import com.YCtechAcademy.bogosaja.member.service.CustomUserDetailsService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,11 +18,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.YCtechAcademy.bogosaja.auth.domain.JwtCode;
+import com.YCtechAcademy.bogosaja.member.service.CustomUserDetailsService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -61,18 +61,26 @@ public class JwtTokenProvider {
 			.signWith(key, SignatureAlgorithm.HS256)
 			.compact();
 
+
+
 		return new TokenInfo(accessToken, refreshToken);
 	}
 
 	// JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
 	public Authentication getAuthentication(String accessToken) {
-		log.info("현재 누가 로그인 되어있나 확인 중");
+		log.info("getAuthentication - 현재 누가 로그인 되어있나 확인 중");
 		// 토큰 복호화
 		Claims claims = parseClaims(accessToken);
 
 		if (claims.get("auth") == null) {
 			throw new AccessDeniedException("권한 정보가 없는 토큰입니다.");
 		}
+		// // 클레임에서 권한 정보 가져오기
+		// Collection<? extends GrantedAuthority> authorities =
+		// 	Arrays.stream(claims.get("auth").toString().split(","))
+		// 		.map(SimpleGrantedAuthority::new)
+		// 		.collect(Collectors.toList());
+		// log.info("get:" +authorities);
 
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 		log.info("get:" +userDetails.getAuthorities());

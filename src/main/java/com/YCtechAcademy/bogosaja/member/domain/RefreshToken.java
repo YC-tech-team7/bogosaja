@@ -2,7 +2,10 @@ package com.YCtechAcademy.bogosaja.member.domain;
 
 import java.util.UUID;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -22,13 +25,12 @@ public class RefreshToken {
 
 	private String refreshToken;
 
-	@OneToOne
-	@JoinColumn(name = "member_id", unique = true)
-	private Member member;
+	@Column(nullable = false, unique = true)
+	private String email;
 
-	public RefreshToken(String refreshToken, Member member) {
+	public RefreshToken(String refreshToken, String email) {
 		this.refreshToken = refreshToken;
-		this.member = member;
+		this.email = email;
 	}
 
 	public RefreshToken() {
