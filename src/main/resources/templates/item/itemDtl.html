@@ -146,7 +146,7 @@
         <div class="repImgDiv">
             <img th:src="${item.itemImgDtoList[0].imgUrl}" class = "rounded repImg" th:alt="${item.itemNm}">
         </div>
-        <div class="wd50">/*constant*/
+        <div class="wd50">
             <span th:if="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="badge badge-primary mgb-15">
                 판매중
             </span>
@@ -169,8 +169,8 @@
                 <h3 name="totalPrice" id="totalPrice" class="font-weight-bold"></h3>
             </div>
             <div th:if="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="text-right">
-                <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">장바구니 담기</button>
-                <button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>
+                <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">채팅하기</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="order()">방송 보기</button>
             </div>
             <div th:unless="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="text-right">
                 <button type="button" class="btn btn-danger btn-lg">품절</button>
