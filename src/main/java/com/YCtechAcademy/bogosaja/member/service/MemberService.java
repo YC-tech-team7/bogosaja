@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,17 +77,24 @@ public class MemberService {
 		// 5. 인증 정보를 기반으로 JWT 토큰 생성
 		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
 
-		// 6. refresh token 업데이트 or 생성
-		Optional<RefreshToken> refreshToken = refreshTokenRepository.findByMember_Email(email);
+		// 6. refresh token 있는지 확인 업데이트 or 생성
+		Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
 
 		if(refreshToken.isPresent()){
 			// 존재한다면
 			refreshToken.get().setRefreshToken(tokenInfo.refreshToken());
 		}else{
-			refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), member.get()));
+			refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), email));
 		}
 
 		return tokenInfo;
+	}
+
+	@Transactional
+	public void signOut() {
+		String findEmailByJwt = SecurityContextHolder.getContext().getAuthentication().getName();
+		RefreshToken refreshToken = refreshTokenRepository.findByEmail(findEmailByJwt).orElseThrow();
+		refreshTokenRepository.delete(refreshToken);
 	}
 
 	@Transactional
@@ -94,7 +102,7 @@ public class MemberService {
 		if (!passwordEncoder.matches(deleteRequest.password(), member1.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
-		RefreshToken refreshToken = refreshTokenRepository.findByMember_Email(member1.getUsername()).orElseThrow();
+		RefreshToken refreshToken = refreshTokenRepository.findByEmail(member1.getUsername()).orElseThrow();
 		refreshTokenRepository.delete(refreshToken);
 		Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
 		memberRepository.delete(member); // todo : 데이터삭제? 삭제필드 수정? 중 어떻게

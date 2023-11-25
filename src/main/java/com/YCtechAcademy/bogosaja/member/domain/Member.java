@@ -48,7 +48,17 @@ public class Member extends BaseEntity implements UserDetails {
 	@Column(name = "role", nullable = false, columnDefinition = "varchar(40)")
 	private Role role;
 
+	@Column(name = "provider", columnDefinition = "varchar(40)")
+	private String provider; //어떤 OAuth인지(google, naver 등)
 
+	@Column(name = "provider_id", columnDefinition = "varchar(40)")
+	private String providerId; // 해당 OAuth 의 key(id)
+
+	// todo 다이나믹 업데이트  반영
+	// public void update(String password, String nickname) {
+	// 	this.password = password;
+	// 	this.nickname = nickname;
+	// }
 	public void update(String nickname) {
 		this.nickname = nickname;
 	}
@@ -57,12 +67,13 @@ public class Member extends BaseEntity implements UserDetails {
 	}
 
 	@Builder
-	public Member(UUID id, String email, String password, String nickname, Role role) {
-		this.id = id;
+	public Member(String email, String password, String nickname, Role role, String provider, String providerId) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.role = role;
+		this.provider = provider;
+		this.providerId = providerId;
 	}
 
 	@Override

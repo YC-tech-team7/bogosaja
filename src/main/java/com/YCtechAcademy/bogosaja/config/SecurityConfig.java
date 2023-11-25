@@ -1,24 +1,21 @@
 package com.YCtechAcademy.bogosaja.config;
 
-import com.YCtechAcademy.bogosaja.member.service.CustomUserDetailsService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.YCtechAcademy.bogosaja.auth.AuthenticationSuccessHandler;
 import com.YCtechAcademy.bogosaja.auth.JwtAuthFilter;
 import com.YCtechAcademy.bogosaja.member.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +28,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
+		// 정적 자원에 대해서 Security를 적용하지 않음으로 설정
 		return web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 
@@ -40,6 +38,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 		http
 				.httpBasic().disable()
 				.csrf().disable()
+				.formLogin().disable()
 				.headers().frameOptions().sameOrigin();
 
 		// 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
@@ -48,11 +47,10 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 		http
 				.authorizeRequests()
-					.antMatchers("/**", "/members/auth/signUp", "/members/auth/signIn", "/members/db").permitAll()
+					.antMatchers("/", "/members/auth/signUp", "/members/auth/signIn").permitAll()
 					.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-				.formLogin().disable()
 				.oauth2Login()
 					.loginPage("/members/auth/signIn")
 					.defaultSuccessUrl("/")
@@ -62,5 +60,6 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 		return http.build();
 	}
+
 }
 

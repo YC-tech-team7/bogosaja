@@ -3,8 +3,10 @@ package com.YCtechAcademy.bogosaja.member.service;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -14,6 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.YCtechAcademy.bogosaja.member.domain.Member;
+import com.YCtechAcademy.bogosaja.member.domain.Role;
 import com.YCtechAcademy.bogosaja.member.dto.OAuth2Attribute;
 import com.YCtechAcademy.bogosaja.member.repository.MemberRepository;
 
@@ -25,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	//구글로 부터 받은 userRequest 데이터에 대한 후처리되는 함수
 	//함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
@@ -54,20 +58,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		// 이메일로 가입된 회원인지 조회한다.
 		Optional<Member> findMember = memberRepository.findByEmail(email);
 
+		String providerId = oAuth2User.getAttribute("sub"); // Google의 경우 sub가 providerId와 같은 역할
+
 		if (findMember.isEmpty()) {
-			// 회원이 존재하지 않을경우, memberAttribute의 exist 값을 false로 넣어준다.
-			memberAttribute.put("exist", false);
-			// 회원의 권한(회원이 존재하지 않으므로 기본권한인 ROLE_USER를 넣어준다), 회원속성, 속성이름을 이용해 DefaultOAuth2User 객체를 생성해 반환한다.
-			return new DefaultOAuth2User(
-				Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-				memberAttribute, "email");
+			Member newMember = Member.builder()
+				.email(email)
+				.password(passwordEncoder.encode(UUID.randomUUID().toString()))
+				.nickname(oAuth2User.getName() + "_" + providerId)
+				.role(Role.USER)
+				.provider(registrationId)
+				.providerId(providerId)
+				.build();
+			memberRepository.save(newMember);
 		}
 
-		// 회원이 존재할경우, memberAttribute의 exist 값을 true로 넣어준다.
-		memberAttribute.put("exist", true);
 		// 회원의 권한과, 회원속성, 속성이름을 이용해 DefaultOAuth2User 객체를 생성해 반환한다.
 		return new DefaultOAuth2User(
-			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-			memberAttribute, "email");
+			Collections.singleton(new SimpleGrantedAuthority(Role.USER.getAuthority())),
+			memberAttribute,
+			"email"
+		);
 	}
 }
