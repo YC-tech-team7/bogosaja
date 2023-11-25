@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class CommerceController {
     private final MemberRepository memberRepository;
 
-    @GetMapping("/")
+    @GetMapping("/index") // "/" 가 겹쳐서 임시로 바꿈
     public String mainPage(Model model, @AuthenticationPrincipal Member member1){
 
         if (member1 != null){

@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.YCtechAcademy.bogosaja.global.domain.BaseEntity2;
 import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,17 +18,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @DynamicUpdate
 @NoArgsConstructor
 @Table(name = "member")
-public class Member extends BaseEntity implements UserDetails {
+public class Member extends BaseEntity2 implements UserDetails {
 
 	@Id
 	@GeneratedValue(generator = "uuid-hibernate-generator")

@@ -1,50 +1,46 @@
 package com.YCtechAcademy.bogosaja.item.domain;
 
-public class Item {
+import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
+import com.YCtechAcademy.bogosaja.item.dto.ItemFormDto;
 
-    private String name;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "item")
+@Getter @Setter
+@ToString
+public class Item extends BaseEntity {
+
+    //책에 구현된 재고 수량은 따로 구현하지 않음
+    //등록 시간 및 수정 시간의 변수명을 책과 다르게 구현함
+
+    @Id
+    @Column(name ="item_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(nullable = false, length = 50)
+    private String itemNm;
+
+    @Column(name = "price", nullable = false)
     private int price;
-    private String image;
-    private String body;
-    private boolean status;
 
-    public String getName() {
-        return name;
-    }
+    @Lob
+    @Column(nullable = false)
+    private String itemDetail;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Enumerated(EnumType.STRING)
+    private ItemSellStatus itemSellStatus;
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void updateItem(ItemFormDto itemFormDto){
+        this.itemNm = itemFormDto.getItemNm();
+        this.price = itemFormDto.getPrice();
+        this.itemDetail = itemFormDto.getItemDetail();
+        this.itemSellStatus = itemFormDto.getItemSellStatus();
     }
 }

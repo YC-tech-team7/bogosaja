@@ -47,13 +47,11 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 		http
 				.authorizeRequests()
-					.antMatchers("/", "/members/auth/signUp", "/members/auth/signIn").permitAll()
+					.antMatchers("/**","/", "/members/auth/signUp", "/members/auth/signIn").permitAll()
 					.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 				.oauth2Login()
-					.loginPage("/members/auth/signIn")
-					.defaultSuccessUrl("/")
 					.successHandler(authenticationSuccessHandler)
 					.userInfoEndpoint()
 					.userService(oAuth2UserService);
