@@ -31,6 +31,7 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    //홈화면 - 상품 목록 보기, 페이징 기능 구현
     @GetMapping(value = "/")
     public String main(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model){
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0,6);
@@ -42,12 +43,14 @@ public class ItemController {
         return "main";
     }
 
+    //상품 등록 화면 조회(이동)
     @GetMapping(value = "/item/new")
     public String itemForm(Model model) {
         model.addAttribute("itemFormDto", new ItemFormDto());
         return "item/itemForm";
     }
 
+    //상품 등록 기능
     @PostMapping(value = "/item/new")
     public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
         if (bindingResult.hasErrors()) {
@@ -67,6 +70,7 @@ public class ItemController {
         return "redirect:/";
     }
 
+    //어드민 - 상품 상세 조회(어드민 따로 구현 안해서 추후 구현 요망)
     @GetMapping(value = "/admin/item/{itemId}")
     public String adminItemDtl(@PathVariable("itemId") Long itemId, Model model) {
 
@@ -81,6 +85,7 @@ public class ItemController {
         return "item/itemForm";
     }
 
+    //상품 정보 수정 기능
     @PostMapping(value = "/item/{itemId}")
     public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model){
         if(bindingResult.hasErrors()){
@@ -101,6 +106,7 @@ public class ItemController {
         return "redirect:/";
     }
 
+    //어드민 - 상품 검색 조회 기능 (어드민 따로 구현 안해서 추후 구현 요망)
     @GetMapping(value = {"/items", "/items/{pages}"})
     public String itemManage(ItemSearchDto itemSearchDto, @PathVariable("page") Optional<Integer> page, Model model){
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() :  0, 3);
@@ -113,6 +119,7 @@ public class ItemController {
                 return "item/itemMng";
     }
 
+    //상품 상세 화면 조회(이동) 기능
     @GetMapping(value="/item/{itemId}")
     public String itemDtl(Model model, @PathVariable("itemId") Long itemId){
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
