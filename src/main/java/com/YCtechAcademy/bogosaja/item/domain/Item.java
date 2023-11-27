@@ -16,9 +16,6 @@ import java.time.LocalDateTime;
 @ToString
 public class Item extends BaseEntity {
 
-    //책에 구현된 재고 수량은 따로 구현하지 않음
-    //등록 시간 및 수정 시간의 변수명을 책과 다르게 구현함
-
     @Id
     @Column(name ="item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
