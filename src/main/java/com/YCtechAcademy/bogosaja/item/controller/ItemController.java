@@ -126,5 +126,11 @@ public class ItemController {
         model.addAttribute("item", itemFormDto);
         return "item/itemDtl";
     }
+
+    @PostMapping(value = "/item/like/{itemId}")
+    public String like(@PathVariable("itemId") Long itemId){
+
+        return "redirect:/item/"+itemId.toString();
+    }
 }
 

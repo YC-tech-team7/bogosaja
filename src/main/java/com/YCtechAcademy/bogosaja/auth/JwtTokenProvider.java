@@ -75,12 +75,6 @@ public class JwtTokenProvider {
 		if (claims.get("auth") == null) {
 			throw new AccessDeniedException("권한 정보가 없는 토큰입니다.");
 		}
-		// // 클레임에서 권한 정보 가져오기
-		// Collection<? extends GrantedAuthority> authorities =
-		// 	Arrays.stream(claims.get("auth").toString().split(","))
-		// 		.map(SimpleGrantedAuthority::new)
-		// 		.collect(Collectors.toList());
-		// log.info("get:" +authorities);
 
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 		log.info("get:" +userDetails.getAuthorities());
@@ -96,7 +90,6 @@ public class JwtTokenProvider {
 			return e.getClaims();
 		}
 	}
-
 
 	// 토큰 검증
 	public JwtCode validateToken(String token) {
