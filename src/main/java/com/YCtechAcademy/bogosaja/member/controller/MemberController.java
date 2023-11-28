@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
    private final MemberService memberService;
-   private final MemberRepository memberRepository;
    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/auth/signUp")
@@ -92,18 +91,6 @@ public class MemberController {
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
         return "redirect:/";
-    }
-
-    @GetMapping("/mypage")
-    public String goMy(Model model, @AuthenticationPrincipal Member member1){
-
-        if (member1 != null){
-            Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
-            model.addAttribute("member", member.toDTO(member));
-            return "member/mypage";
-        }else{
-            return "redirect:/member/auth/signin";
-        }
     }
 
     //todo 구글 회원은 회원탈퇴 따로 , 업데이트 불가

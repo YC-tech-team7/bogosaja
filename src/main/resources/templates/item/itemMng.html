@@ -57,7 +57,7 @@
         <td>
           <a th:href="'/admin/item/'+${item.id}" th:text="${item.itemNm}"></a>
         </td>
-        <td th:text="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL} ? '판매중' : '품절'"></td>
+        <td th:text="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL} ? '판매중' : '거래 완료'"></td>
         <td th:text="${item.createdBy}"></td>
         <td th:text="${item.regTime}"></td>
       </tr>
@@ -97,7 +97,7 @@
       <select th:field="*{searchSellStatus}" class="form-control" style="width:auto;">
         <option value="">판매상태(전체)</option>
         <option value="SELL">판매</option>
-        <option value="SOLD_OUT">품절</option>
+        <option value="SOLD_OUT">거래 완료</option>
       </select>
       <select th:field="*{searchBy}" class="form-control" style="width:auto;">
         <option value="itemNm">상품명</option>

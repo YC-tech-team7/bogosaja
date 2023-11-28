@@ -3,10 +3,6 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 
-<head>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-</head>
 
 <!-- 사용자 스크립트 추가 -->
 <th:block layout:fragment="script">
@@ -107,6 +103,84 @@
             });
         }
 
+        // function createChatRoom() {
+        //     var token = $("meta[name='_csrf']").attr("content");
+        //
+        //     var url = "/chat/createroom";
+        //     var paramData = {
+        //         roomName: "채팅방 이름" // 원하는 채팅방 이름을 여기에 입력
+        //     };
+        //
+        //     var param = JSON.stringify(paramData);
+        //
+        //     $.ajax({
+        //         url: url,
+        //         type: "POST",
+        //         contentType: "application/json",
+        //         data: param,
+        //         beforeSend: function(xhr) {
+        //             /* CSRF를 비활성화했다면 헤더를 설정하지 않도록 체크 */
+        //             if (token) {
+        //                 xhr.setRequestHeader("X-CSRF-TOKEN", token);
+        //             }
+        //         },
+        //         dataType: "json",
+        //         cache: false,
+        //         success: function(result, status) {
+        //             alert("채팅방이 생성되었습니다.");
+        //             location.href = '/chat';
+        //         },
+        //         error: function(jqXHR, status, error) {
+        //             if (jqXHR.status == '401') {
+        //                 alert('로그인 후 이용해주세요');
+        //                 location.href = '/members/login';
+        //             } else {
+        //                 alert(jqXHR.responseText);
+        //             }
+        //         }
+        //     });
+        // }
+
+        function createChatRoom() {
+            var token = $("meta[name='_csrf']").attr("content");
+
+            var url = "/chat/createroom";
+            var paramData = {
+                roomName: "채팅방 이름" // 원하는 채팅방 이름을 여기에 입력
+            };
+
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function(xhr) {
+                    /* CSRF를 비활성화했다면 헤더를 설정하지 않도록 체크 */
+                    if (token) {
+                        xhr.setRequestHeader("X-CSRF-TOKEN", token);
+                    }
+                },
+                dataType: "json",
+                cache: false,
+                success: function(result, status) {
+                    // 채팅방 생성 성공 시, 화면 전환 코드만 실행
+                    location.href = '/chat';
+                },
+                error: function(jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+
+
     </script>
 </th:block>
 
@@ -147,11 +221,11 @@
             <img th:src="${item.itemImgDtoList[0].imgUrl}" class = "rounded repImg" th:alt="${item.itemNm}">
         </div>
         <div class="wd50">
-            <span th:if="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="badge badge-primary mgb-15">
+            <span th:if="${item.itemSellStatus == T(com.YCtechAcademy.bogosaja.item.domain.ItemSellStatus).SELL}" class="badge badge-primary mgb-15">
                 판매중
             </span>
-            <span th:unless="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="badge btn-danger mgb-15" >
-                품절
+            <span th:unless="${item.itemSellStatus == T(com.YCtechAcademy.bogosaja.item.domain.ItemSellStatus).SELL}" class="badge btn-danger mgb-15" >
+                거래 완료
             </span>
             <div class="h4" th:text="${item.itemNm}"></div>
             <hr class="my-4">
@@ -165,15 +239,20 @@
             <hr class="my-4">
 
             <div class="text-right mgt-50">
-                <h5>결제 금액</h5>
+                <h5>판매 금액</h5>
                 <h3 name="totalPrice" id="totalPrice" class="font-weight-bold"></h3>
             </div>
-            <div th:if="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="text-right">
-                <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">채팅하기</button>
+            <div th:if="${item.itemSellStatus == T(com.YCtechAcademy.bogosaja.item.domain.ItemSellStatus).SELL}" class="text-right">
+                <button type="button" class="btn btn-light border border-primary btn-lg" onclick="createChatRoom()">채팅하기</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="order()">방송 보기</button>
             </div>
-            <div th:unless="${item.itemSellStatus == T(com.shop.consonant.ItemSellStatus).SELL}" class="text-right">
-                <button type="button" class="btn btn-danger btn-lg">품절</button>
+            <div class="text-right mgt-50">
+                <button type="submit" onclick="updateItem"> 게시글 수정하기</button>
+            </div>
+            <!-- 이하 생략 -->
+
+            <div th:unless="${item.itemSellStatus == T(com.YCtechAcademy.bogosaja.item.domain.ItemSellStatus).SELL}" class="text-right">
+                <button type="button" class="btn btn-danger btn-lg">거래 완료</button>
             </div>
         </div>
     </div>

@@ -10,10 +10,10 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 
-@EntityListeners(value = {AuditingEntityListener.class})
+@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
-public abstract class BaseEntity extends BaseTimeEntity{
+public abstract class BaseEntity extends BaseEntity2{
 
 	@CreatedBy
 	@Column(updatable = false)
@@ -22,3 +22,4 @@ public abstract class BaseEntity extends BaseTimeEntity{
 	@LastModifiedBy
 	private String modifiedBy;
 }
+//누가 생성 및 수정했는지 기록하는 클래스
