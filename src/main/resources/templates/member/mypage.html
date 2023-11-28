@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<li sec:authorize="isAuthenticated()">
+    <h2 th:if="${member != null}">[[${member.nickname}]]님 안녕하세요!</h2>
+</li>
+
+<form th:action="@{/members/update}" method="GET" sec:authorize="isAuthenticated()">
+    <button type="submit">회원정보수정</button>
+</form>
+
+<form th:action="@{/members/reset}" method="GET" sec:authorize="isAuthenticated()">
+    <button type="submit">비밀번호 초기화</button>
+</form>
+
+<form th:action="@{/members/delete}" method="GET" sec:authorize="isAuthenticated()">
+    <button type="submit">회원탈퇴</button>
+</form>
+
+</body>
+</html>

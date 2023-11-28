@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.YCtechAcademy.bogosaja.member.repository.MemberRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
    private final MemberService memberService;
+   private final MemberRepository memberRepository;
    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/auth/signUp")
@@ -92,8 +94,19 @@ public class MemberController {
         return "redirect:/";
     }
 
-    //todo 구글 회원은 회원탈퇴 따로 , 업데이트 불가
+    @GetMapping("/mypage")
+    public String goMy(Model model, @AuthenticationPrincipal Member member1){
 
+        if (member1 != null){
+            Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
+            model.addAttribute("member", member.toDTO(member));
+            return "member/mypage";
+        }else{
+            return "redirect:/member/auth/signin";
+        }
+    }
+
+    //todo 구글 회원은 회원탈퇴 따로 , 업데이트 불가
     @GetMapping("/update")
     public String updateForm(){
        return "member/updateUserInfoForm";
