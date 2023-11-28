@@ -1,4 +1,4 @@
-package com.YCtechAcademy.bogosaja.config;
+package com.YCtechAcademy.bogosaja.global.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +52,8 @@ public class SecurityConfig implements WebMvcConfigurer {
 				.and()
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 				.oauth2Login()
+					.loginPage("/members/auth/signIn")
+					.defaultSuccessUrl("/")
 					.successHandler(authenticationSuccessHandler)
 					.userInfoEndpoint()
 					.userService(oAuth2UserService);

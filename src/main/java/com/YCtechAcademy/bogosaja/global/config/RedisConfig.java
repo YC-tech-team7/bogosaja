@@ -1,4 +1,4 @@
-package com.YCtechAcademy.bogosaja.config;
+package com.YCtechAcademy.bogosaja.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

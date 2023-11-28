@@ -7,10 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.YCtechAcademy.bogosaja.global.domain.BaseEntity2;
+import com.YCtechAcademy.bogosaja.global.domain.BaseTimeEntity;
 import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,13 +27,12 @@ import lombok.NoArgsConstructor;
 @DynamicUpdate
 @NoArgsConstructor
 @Table(name = "member")
-public class Member extends BaseEntity2 implements UserDetails {
+public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
-	@GeneratedValue(generator = "uuid-hibernate-generator")
-	@GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
-	@Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
-	private UUID id;
+	@Column(name ="member_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@Column(name="email", nullable = false, unique = true, columnDefinition = "varchar(50)")
 	private String email;

@@ -1,4 +1,4 @@
-package com.YCtechAcademy.bogosaja.config;
+package com.YCtechAcademy.bogosaja.global.config;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
