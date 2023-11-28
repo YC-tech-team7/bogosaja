@@ -21,10 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @DynamicUpdate
+@Getter
 @NoArgsConstructor
 @Table(name = "member")
 public class Member extends BaseTimeEntity implements UserDetails {

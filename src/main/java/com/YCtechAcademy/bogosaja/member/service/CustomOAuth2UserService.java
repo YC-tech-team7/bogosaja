@@ -58,12 +58,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		Optional<Member> findMember = memberRepository.findByEmail(email);
 
 		String providerId = oAuth2User.getAttribute("sub"); // Google의 경우 sub가 providerId와 같은 역할
-
 		if (findMember.isEmpty()) {
 			Member newMember = Member.builder()
 				.email(email)
 				.password(passwordEncoder.encode(UUID.randomUUID().toString()))
-				.nickname(oAuth2User.getName() + "_" + providerId)
+				.nickname(oAuth2User.getAttribute("name"))
 				.role(Role.USER)
 				.provider(registrationId)
 				.providerId(providerId)
