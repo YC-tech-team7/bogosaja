@@ -3,12 +3,12 @@ package com.YCtechAcademy.bogosaja.item.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import com.YCtechAcademy.bogosaja.item.domain.Item;
 
 import io.lettuce.core.dynamic.annotation.Param;
-import org.springframework.data.jpa.repository.Query;
 
 public interface ItemRepository
         extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item>, ItemRepositoryCustom {

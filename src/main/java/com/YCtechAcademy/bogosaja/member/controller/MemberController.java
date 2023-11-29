@@ -2,11 +2,14 @@ package com.YCtechAcademy.bogosaja.member.controller;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import com.YCtechAcademy.bogosaja.member.dto.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.YCtechAcademy.bogosaja.auth.JwtTokenProvider;
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
+import com.YCtechAcademy.bogosaja.item.dto.ItemSearchDto;
+import com.YCtechAcademy.bogosaja.item.dto.MainItemDto;
+import com.YCtechAcademy.bogosaja.item.service.ItemService;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
+import com.YCtechAcademy.bogosaja.member.dto.DeleteRequest;
+import com.YCtechAcademy.bogosaja.member.dto.MemberDto;
+import com.YCtechAcademy.bogosaja.member.dto.ResetRequest;
+import com.YCtechAcademy.bogosaja.member.dto.SignInRequest;
+import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
+import com.YCtechAcademy.bogosaja.member.dto.UpdateRequest;
 import com.YCtechAcademy.bogosaja.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,8 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/members")
 public class MemberController {
 
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+   private final MemberService memberService;
+   private final JwtTokenProvider jwtTokenProvider;
+   private final ItemService itemService;
 
     @GetMapping("/auth/signUp")
     // 회원가입 화면
@@ -127,4 +140,14 @@ public class MemberController {
         return "member/members";
     }
 
+    @GetMapping("/myItems")
+    public String findMyItems(Optional<Integer> page, Model model, @AuthenticationPrincipal Member member){
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0,6);
+        ItemSearchDto itemSearchDto = new ItemSearchDto();
+        itemSearchDto.setCreatedBy(member.getEmail());
+        Page<MainItemDto> items = itemService.getMainItemPage(itemSearchDto, pageable);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", 5);
+        return "member/myItems";
+    }
 }

@@ -40,7 +40,7 @@ public class ItemController {
     private final ItemService itemService;
     private final MemberRepository memberRepository;
 
-    // 홈화면 - 상품 목록 보기, 페이징 기능 구현
+    //홈화면 - 상품 목록 보기, 페이징 기능 구현
     @GetMapping(value = "/")
     public String main(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model,
             @AuthenticationPrincipal Member member1) {

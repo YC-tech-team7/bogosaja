@@ -83,6 +83,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return StringUtils.isEmpty(searchQuery) ? null : QItem.item.itemNm.like("%" + searchQuery + "%");
     }
 
+    private BooleanExpression createdByEq(String createdBy){
+        return StringUtils.isEmpty(createdBy) ? null : QItem.item.createdBy.eq(createdBy);
+    }
+
     @Override
     public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         QItem item = QItem.item;
@@ -100,6 +104,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .join(itemImg.item, item)
                 .where(itemImg.repImgYn.eq("Y"))
                 .where(itemNmLike(itemSearchDto.getSearchQuery()))
+                .where(createdByEq(itemSearchDto.getCreatedBy()))
                 .orderBy(item.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
