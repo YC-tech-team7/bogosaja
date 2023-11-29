@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.YCtechAcademy.bogosaja.member.dto.*;
 import com.YCtechAcademy.bogosaja.member.repository.MemberRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,11 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.YCtechAcademy.bogosaja.auth.JwtTokenProvider;
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
-import com.YCtechAcademy.bogosaja.member.dto.DeleteRequest;
-import com.YCtechAcademy.bogosaja.member.dto.ResetRequest;
-import com.YCtechAcademy.bogosaja.member.dto.SignInRequest;
-import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
-import com.YCtechAcademy.bogosaja.member.dto.UpdateRequest;
 import com.YCtechAcademy.bogosaja.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -118,7 +114,7 @@ public class MemberController {
 
     @GetMapping("/db")
     public String db(Model model){
-        List<SignUpRequest> memberList = memberService.findAll();
+        List<MemberDto> memberList = memberService.findAll();
         model.addAttribute("memberList", memberList);
         return "member/members";
     }

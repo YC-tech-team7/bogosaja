@@ -18,11 +18,15 @@
         <th>memberEmail</th>
         <th>memberNickname</th>
         <th>role</th>
+        <th>like items</th>
     </tr>
     <tr th:each="member: ${memberList}">
         <td th:text="${member.email}"></td>
         <td th:text="${member.nickname}"></td>
         <td th:text="${member.role}"></td>
+        <td>
+            <span th:each="item : ${member.likedItemNames}" th:text="${item}"></span>
+        </td>
     </tr>
 </table>
 </body>

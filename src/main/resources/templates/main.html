@@ -32,6 +32,51 @@
   </style>
 </th:block>
 
+<th:block layout:fragment="script">
+  <script src="https://kit.fontawesome.com/3bb8c2f12e.js" crossorigin="anonymous"></script>
+  <script th:inline="javascript">
+
+    function toggleLike(itemId) {
+      sendLikeRequest('/item/like/' + itemId);
+    }
+
+    function sendLikeRequest(url) {
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+      })
+      .then(response => {
+        if (response.status === 401) {
+            const loginUrl = response.headers.get('Location');
+            window.location.href = loginUrl;
+        } else {
+            return response.json();
+        }
+      })
+      .then(data => {
+
+        const likeStateIcon = document.getElementById('likestate');
+        if (data.message) {
+            alert("찜 추가");
+            likeStateIcon.innerText = '♥';
+        } else {
+            alert("찜 취소");
+            likeStateIcon.innerText = '♡';
+        }
+      })
+      .catch(error => {
+        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+            alert('네트워크 에러가 발생하였습니다.');
+        }
+      });
+    }
+
+  </script>
+</th:block>
+
 <div layout:fragment="content">
 
   <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
@@ -59,6 +104,9 @@
               <h3 class="card-title text-danger">[[${item.price}]]원</h3>
             </div>
           </a>
+          <span class="text-right mgt-50" th:itemId="${item.id}" onclick="toggleLike(this.getAttribute('itemId'));">
+            <i id="likestate" th:style="${'font-size: 2em'}" th:text="${isLiked[item.id]} ? '♥' : '♡'"></i>
+          </span>
         </div>
       </div>
     </th:block>

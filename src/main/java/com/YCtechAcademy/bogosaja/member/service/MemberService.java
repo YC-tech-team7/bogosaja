@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.YCtechAcademy.bogosaja.member.dto.ResetRequest;
+import com.YCtechAcademy.bogosaja.item.repository.LikeListRepository;
+import com.YCtechAcademy.bogosaja.member.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +22,6 @@ import com.YCtechAcademy.bogosaja.auth.JwtTokenProvider;
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
 import com.YCtechAcademy.bogosaja.member.domain.RefreshToken;
-import com.YCtechAcademy.bogosaja.member.dto.DeleteRequest;
-import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
-import com.YCtechAcademy.bogosaja.member.dto.UpdateRequest;
 import com.YCtechAcademy.bogosaja.member.repository.MemberRepository;
 import com.YCtechAcademy.bogosaja.member.repository.RefreshTokenRepository;
 
@@ -37,6 +37,7 @@ public class MemberService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PasswordEncoder passwordEncoder;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final LikeListRepository likeListRepository;
 
 	private void validateDuplicateMember(SignUpRequest signUpRequest) {
 		Optional<Member> member = memberRepository.findByEmail(signUpRequest.getEmail());
@@ -57,7 +58,6 @@ public class MemberService {
 
 	@Transactional
 	public TokenInfo signIn(String email, String password) {
-
 		// 1. 받은 email이 실제로 존재하는 회원인지 확인
 		Optional<Member> member = memberRepository.findByEmail(email);
 
@@ -67,31 +67,39 @@ public class MemberService {
 		}
 
 		if (!passwordEncoder.matches(password, member.get().getPassword())) {
-			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+			throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
 		}
 
-		// 3. Login ID/PW 를 기반으로 Authentication 객체 생성
-		// 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+		try {
+			// 3. Login ID/PW 를 기반으로 Authentication 객체 생성
+			// 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
+			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
-		// 4. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-		// authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+			// 4. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
+			// authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-		// 5. 인증 정보를 기반으로 JWT 토큰 생성
-		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
+			// 5. 인증 정보를 기반으로 JWT 토큰 생성
+			TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
 
-		// 6. refresh token 있는지 확인 업데이트 or 생성
-		Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
+			// 6. refresh token 있는지 확인 업데이트 or 생성
+			Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
 
-		if(refreshToken.isPresent()){
-			// 존재한다면
-			refreshToken.get().setRefreshToken(tokenInfo.refreshToken());
-		}else{
-			refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), email));
+			if (refreshToken.isPresent()) {
+				// 존재한다면
+				refreshToken.get().setRefreshToken(tokenInfo.refreshToken());
+			} else {
+				refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), email));
+			}
+
+			return tokenInfo;
+		} catch (AuthenticationException e) {
+			// 인증에 실패한 경우 (Bad credentials 등)
+			throw new BadCredentialsException("로그인에 실패하였습니다.");
+		} catch (Exception e) {
+			// 그 외 예외 처리
+			throw new RuntimeException("로그인 중에 오류가 발생했습니다.");
 		}
-
-		return tokenInfo;
 	}
 
 	@Transactional
@@ -133,11 +141,11 @@ public class MemberService {
 		member.update(updateRequest.nickname());
 	}
 
-	public List<SignUpRequest> findAll(){
+	public List<MemberDto> findAll(){
 		List<Member> memberList = memberRepository.findAll();
-		List<SignUpRequest> members = new ArrayList<>();
+		List<MemberDto> members = new ArrayList<>();
 		for (Member member : memberList){
-			members.add(member.toDTO(member));
+			members.add(member.toDto(member, likeListRepository));
 		}
 		return members;
 	}

@@ -1,17 +1,16 @@
 package com.YCtechAcademy.bogosaja.member.domain;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity2;
-import com.YCtechAcademy.bogosaja.member.dto.SignUpRequest;
+import com.YCtechAcademy.bogosaja.item.domain.Item;
+import com.YCtechAcademy.bogosaja.item.domain.LikeList;
+import com.YCtechAcademy.bogosaja.item.repository.LikeListRepository;
+import com.YCtechAcademy.bogosaja.member.dto.MemberDto;
+import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @DynamicUpdate
 @NoArgsConstructor
+@Getter
 @Table(name = "member")
 public class Member extends BaseEntity2 implements UserDetails {
 
@@ -53,11 +53,6 @@ public class Member extends BaseEntity2 implements UserDetails {
 	@Column(name = "provider_id", columnDefinition = "varchar(40)")
 	private String providerId; // 해당 OAuth 의 key(id)
 
-	// todo 다이나믹 업데이트  반영
-	// public void update(String password, String nickname) {
-	// 	this.password = password;
-	// 	this.nickname = nickname;
-	// }
 	public void update(String nickname) {
 		this.nickname = nickname;
 	}
@@ -113,13 +108,17 @@ public class Member extends BaseEntity2 implements UserDetails {
 		return true;
 	}
 
-	public static SignUpRequest toDTO(Member member) {
-		return SignUpRequest.builder()
+	public MemberDto toDto(Member member, LikeListRepository likeListRepository) {
+
+		Set<String> likedItemNames = likeListRepository.findByMember(member).stream()
+				.map(likeList -> likeList.getItem().getItemNm())
+				.collect(Collectors.toSet());
+
+		return MemberDto.builder()
 				.email(member.email)
-				.password1(member.password)
-				.password2(member.password)
 				.nickname(member.nickname)
 				.role(member.role)
+				.likedItemNames(likedItemNames)
 				.build();
 	}
 }

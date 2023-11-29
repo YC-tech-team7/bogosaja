@@ -3,12 +3,15 @@ package com.YCtechAcademy.bogosaja.item.domain;
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 import com.YCtechAcademy.bogosaja.item.dto.ItemFormDto;
 
+import com.YCtechAcademy.bogosaja.member.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "item")
@@ -17,8 +20,8 @@ import java.time.LocalDateTime;
 public class Item extends BaseEntity {
 
     @Id
-    @Column(name ="item_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name ="item_id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 50)
@@ -40,4 +43,5 @@ public class Item extends BaseEntity {
         this.itemDetail = itemFormDto.getItemDetail();
         this.itemSellStatus = itemFormDto.getItemSellStatus();
     }
+
 }

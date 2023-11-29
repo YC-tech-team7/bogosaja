@@ -13,8 +13,8 @@ import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 public class ItemImg extends BaseEntity {
 
     @Id
-    @Column(name = "item_img_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "item_img_id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String imgName; //이미지 파일명
