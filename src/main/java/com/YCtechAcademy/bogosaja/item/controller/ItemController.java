@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.YCtechAcademy.bogosaja.item.domain.Item;
@@ -24,6 +26,7 @@ import com.YCtechAcademy.bogosaja.item.dto.ItemFormDto;
 import com.YCtechAcademy.bogosaja.item.dto.ItemSearchDto;
 import com.YCtechAcademy.bogosaja.item.dto.MainItemDto;
 import com.YCtechAcademy.bogosaja.item.service.ItemService;
+import com.YCtechAcademy.bogosaja.member.domain.Member;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,11 +74,30 @@ public class ItemController {
     }
 
     //어드민 - 상품 상세 조회(어드민 따로 구현 안해서 추후 구현 요망)
-    @GetMapping(value = "/admin/item/{itemId}")
-    public String adminItemDtl(@PathVariable("itemId") Long itemId, Model model) {
+    // @GetMapping(value = "/admin/item/{itemId}")
+    // public String adminItemDtl(@PathVariable("itemId") Long itemId, Model model) {
+    //
+    //     try {
+    //         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+    //         model.addAttribute("itemFormDto", itemFormDto);
+    //     } catch (EntityNotFoundException e) {
+    //         model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
+    //         model.addAttribute("itemFormDto", new ItemFormDto());
+    //         return "item/itemForm";
+    //     }
+    //     return "item/itemForm";
+    // }
 
+    // 상품 정보 수정 화면 조회(이동) 기능
+    @GetMapping(value = "/item/{itemId}/form")
+    public String itemUpdateForm(@PathVariable("itemId") Long itemId, Model model, @AuthenticationPrincipal Member member) {
         try {
             ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+            if(!member.getEmail().equals(itemFormDto.getCreatedBy())){
+                model.addAttribute("errorMessage", "해당 상품의 등록자만 수정할 수 있습니다.");
+                model.addAttribute("itemFormDto", new ItemFormDto());
+                return "item/itemForm";
+            }
             model.addAttribute("itemFormDto", itemFormDto);
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
@@ -121,8 +143,9 @@ public class ItemController {
 
     //상품 상세 화면 조회(이동) 기능
     @GetMapping(value="/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId") Long itemId){
+    public String itemDtl(Model model, @PathVariable("itemId") Long itemId, @AuthenticationPrincipal Member member){
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+        itemFormDto.setIsCreatedByMember(Objects.equals(member.getEmail(), itemFormDto.getCreatedBy()));
         model.addAttribute("item", itemFormDto);
         return "item/itemDtl";
     }

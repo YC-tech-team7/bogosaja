@@ -32,6 +32,9 @@ public class ItemFormDto {
 
    private List<Long> itemImgIds = new ArrayList<>();
 
+   private String createdBy;
+   private Boolean isCreatedByMember;
+
    private static ModelMapper modelMapper = new ModelMapper();
 
    public Item createItem(){
