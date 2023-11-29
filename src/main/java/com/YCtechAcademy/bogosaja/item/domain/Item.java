@@ -3,24 +3,21 @@ package com.YCtechAcademy.bogosaja.item.domain;
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 import com.YCtechAcademy.bogosaja.item.dto.ItemFormDto;
 
-import com.YCtechAcademy.bogosaja.member.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "item")
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 public class Item extends BaseEntity {
 
     @Id
-    @Column(name ="item_id", updatable = false, nullable = false)
+    @Column(name = "item_id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -37,7 +34,7 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;
 
-    public void updateItem(ItemFormDto itemFormDto){
+    public void updateItem(ItemFormDto itemFormDto) {
         this.itemNm = itemFormDto.getItemNm();
         this.price = itemFormDto.getPrice();
         this.itemDetail = itemFormDto.getItemDetail();

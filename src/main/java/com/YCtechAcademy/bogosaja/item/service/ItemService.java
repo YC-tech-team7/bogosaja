@@ -1,6 +1,5 @@
 package com.YCtechAcademy.bogosaja.item.service;
 
-
 import com.YCtechAcademy.bogosaja.item.domain.LikeList;
 import com.YCtechAcademy.bogosaja.item.repository.LikeListRepository;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
@@ -42,15 +41,15 @@ public class ItemService {
 
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
 
-        //상품 등록
+        // 상품 등록
         Item item = itemFormDto.createItem();
         itemRepository.save(item);
 
-        //이미지 등록
-        for(int i=0;i<itemImgFileList.size();i++){
+        // 이미지 등록
+        for (int i = 0; i < itemImgFileList.size(); i++) {
             ItemImg itemImg = new ItemImg();
             itemImg.setItem(item);
-            if(i == 0)
+            if (i == 0)
                 itemImg.setRepImgYn("Y");
             else
                 itemImg.setRepImgYn("N");
@@ -61,34 +60,33 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public ItemFormDto getItemDtl(Long itemId){
+    public ItemFormDto getItemDtl(Long itemId) {
 
-        List<ItemImg> itemImgList =
-                itemImgRepository.findByItemIdOrderByIdAsc(itemId);
-                List<ItemImgDto> itemImgDtoList = new ArrayList<>();
-                for(ItemImg itemImg : itemImgList) {
-                    ItemImgDto itemImgDto = ItemImgDto.of(itemImg);
-                    itemImgDtoList.add(itemImgDto);
-                }
+        List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
+        List<ItemImgDto> itemImgDtoList = new ArrayList<>();
+        for (ItemImg itemImg : itemImgList) {
+            ItemImgDto itemImgDto = ItemImgDto.of(itemImg);
+            itemImgDtoList.add(itemImgDto);
+        }
 
-                Item item = itemRepository.findById(itemId)
-                        .orElseThrow(EntityNotFoundException::new);
-                ItemFormDto itemFormDto = ItemFormDto.of(item);
-                itemFormDto.setItemImgDtoList(itemImgDtoList);
-                return itemFormDto;
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(EntityNotFoundException::new);
+        ItemFormDto itemFormDto = ItemFormDto.of(item);
+        itemFormDto.setItemImgDtoList(itemImgDtoList);
+        return itemFormDto;
     }
 
-    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception{
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
 
-        //상품 수정
+        // 상품 수정
         Item item = itemRepository.findById(itemFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
         item.updateItem(itemFormDto);
 
         List<Long> itemImgIds = itemFormDto.getItemImgIds();
 
-        //이미지 등록
-        for(int i = 0;i<itemImgFileList.size();i++){
+        // 이미지 등록
+        for (int i = 0; i < itemImgFileList.size(); i++) {
             itemImgService.updateItemImg(itemImgIds.get(i),
                     itemImgFileList.get(i));
         }
@@ -103,9 +101,9 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("Member not found with email: " + email));
 
         Item item = itemRepository.findById(itemId)
-                .orElseThrow( () -> new NotFoundException("Item not found with id: " + itemId));
+                .orElseThrow(() -> new NotFoundException("Item not found with id: " + itemId));
 
-        Optional <LikeList> likeList = likeListRepository.findByMemberAndItem(member, item);
+        Optional<LikeList> likeList = likeListRepository.findByMemberAndItem(member, item);
 
         // 이미 찜한 상태이면 찜하기 취소
         if (likeList.isPresent()) {
@@ -127,9 +125,9 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("Member not found with email: " + email));
 
         Item item = itemRepository.findById(itemId)
-                .orElseThrow( () -> new NotFoundException("Item not found with id: " + itemId));
+                .orElseThrow(() -> new NotFoundException("Item not found with id: " + itemId));
 
-        Optional <LikeList> likeList = likeListRepository.findByMemberAndItem(member, item);
+        Optional<LikeList> likeList = likeListRepository.findByMemberAndItem(member, item);
 
         if (likeList.isPresent()) {
             isLiked = true;
@@ -138,12 +136,12 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
+    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getAdminItemPage(itemSearchDto, pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getMainItemPage(itemSearchDto, pageable);
     }
 

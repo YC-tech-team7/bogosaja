@@ -1,4 +1,5 @@
 package com.YCtechAcademy.bogosaja.item.dto;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -26,19 +27,22 @@ public class ItemFormDto {
     @NotBlank(message = "이름은 필수 입력 값입니다.")
     private String itemDetail;
 
-   private ItemSellStatus itemSellStatus;
+    private ItemSellStatus itemSellStatus;
 
-   private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
+    private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
-   private List<Long> itemImgIds = new ArrayList<>();
+    private List<Long> itemImgIds = new ArrayList<>();
 
-   private static ModelMapper modelMapper = new ModelMapper();
+    private String createdBy;
+    private Boolean isCreatedByMember;
 
-   public Item createItem(){
-       return modelMapper.map(this, Item.class);
-   }
+    private static ModelMapper modelMapper = new ModelMapper();
 
-   public static ItemFormDto of(Item item){
-       return modelMapper.map(item,ItemFormDto.class);
-   }
+    public Item createItem() {
+        return modelMapper.map(this, Item.class);
+    }
+
+    public static ItemFormDto of(Item item) {
+        return modelMapper.map(item, ItemFormDto.class);
+    }
 }

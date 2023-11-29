@@ -27,26 +27,24 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
 	@Override
 	public void onAuthenticationSuccess(
-		HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws
-		IOException,
-		ServletException {
+			HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException,
+			ServletException {
 		// OAuth2User로 캐스팅하여 인증된 사용자 정보를 가져온다.
 		OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-		log.error("getAttributes : {}", oAuth2User.getAttributes());
+		log.info("getAttributes : {}", oAuth2User.getAttributes());
 
 		// 사용자 이메일을 가져온다.
 		String email = oAuth2User.getAttribute("email");
 
 		TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
 
-
 		// Refresh token 있는지 확인 업데이트 or 생성
 		Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
 
-		if(refreshToken.isPresent()){
+		if (refreshToken.isPresent()) {
 			// 존재한다면
 			refreshToken.get().setRefreshToken(tokenInfo.refreshToken());
-		}else{
+		} else {
 			refreshTokenRepository.save(new RefreshToken(tokenInfo.refreshToken(), email));
 		}
 

@@ -31,7 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 	private final Key key;
 	private final CustomUserDetailsService customUserDetailsService;
-	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService) {
+
+	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
+			CustomUserDetailsService customUserDetailsService) {
 		byte[] keyBytes = Base64.getDecoder().decode(secretKey.getBytes());
 		this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
 		this.customUserDetailsService = customUserDetailsService;
@@ -45,23 +47,21 @@ public class JwtTokenProvider {
 		LocalDateTime now = LocalDateTime.now();
 
 		String accessToken = Jwts.builder()
-			.setSubject(authentication.getName())
-			.claim("auth", authorities)
-			.claim("email", email)
-			.setExpiration(Date.from(now
-				.plusMinutes(30)
-				.atZone(ZoneId.systemDefault()).toInstant()))
-			.signWith(key, SignatureAlgorithm.HS256)
-			.compact();
+				.setSubject(authentication.getName())
+				.claim("auth", authorities)
+				.claim("email", email)
+				.setExpiration(Date.from(now
+						.plusMinutes(30)
+						.atZone(ZoneId.systemDefault()).toInstant()))
+				.signWith(key, SignatureAlgorithm.HS256)
+				.compact();
 
 		String refreshToken = Jwts.builder()
-			.setExpiration(Date.from(now
-				.plusDays(14)
-				.atZone(ZoneId.systemDefault()).toInstant()))
-			.signWith(key, SignatureAlgorithm.HS256)
-			.compact();
-
-
+				.setExpiration(Date.from(now
+						.plusDays(14)
+						.atZone(ZoneId.systemDefault()).toInstant()))
+				.signWith(key, SignatureAlgorithm.HS256)
+				.compact();
 
 		return new TokenInfo(accessToken, refreshToken);
 	}
@@ -77,7 +77,7 @@ public class JwtTokenProvider {
 		}
 
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
-		log.info("get:" +userDetails.getAuthorities());
+		log.info("get:" + userDetails.getAuthorities());
 
 		return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
 	}

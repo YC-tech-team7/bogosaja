@@ -1,4 +1,4 @@
-package com.YCtechAcademy.bogosaja.config;
+package com.YCtechAcademy.bogosaja.global.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -35,29 +35,27 @@ public class SecurityConfig implements WebMvcConfigurer {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http
-				.httpBasic().disable()
+		http.httpBasic().disable()
 				.csrf().disable()
 				.formLogin().disable()
 				.headers().frameOptions().sameOrigin();
 
 		// 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
-		http
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http
-				.authorizeRequests()
-					.antMatchers("/**","/", "/members/auth/signUp", "/members/auth/signIn").permitAll()
-					.anyRequest().authenticated()
+		http.authorizeRequests()
+				.antMatchers("/**", "/", "/members/auth/signUp", "/members/auth/signIn").permitAll()
+				.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 				.oauth2Login()
-					.successHandler(authenticationSuccessHandler)
-					.userInfoEndpoint()
-					.userService(oAuth2UserService);
+				.loginPage("/members/auth/signIn")
+				.defaultSuccessUrl("/")
+				.successHandler(authenticationSuccessHandler)
+				.userInfoEndpoint()
+				.userService(oAuth2UserService);
 
 		return http.build();
 	}
 
 }
-

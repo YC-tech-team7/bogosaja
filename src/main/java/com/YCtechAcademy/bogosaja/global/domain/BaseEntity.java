@@ -1,6 +1,5 @@
 package com.YCtechAcademy.bogosaja.global.domain;
 
-
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -13,7 +12,7 @@ import javax.persistence.MappedSuperclass;
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
-public abstract class BaseEntity extends BaseEntity2{
+public abstract class BaseEntity extends BaseTimeEntity {
 
 	@CreatedBy
 	@Column(updatable = false)
@@ -22,4 +21,4 @@ public abstract class BaseEntity extends BaseEntity2{
 	@LastModifiedBy
 	private String modifiedBy;
 }
-//누가 생성 및 수정했는지 기록하는 클래스
+// 누가 생성 및 수정했는지 기록하는 클래스

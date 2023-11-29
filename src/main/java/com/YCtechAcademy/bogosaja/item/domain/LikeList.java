@@ -3,7 +3,6 @@ package com.YCtechAcademy.bogosaja.item.domain;
 import com.YCtechAcademy.bogosaja.global.domain.BaseEntity;
 import com.YCtechAcademy.bogosaja.member.domain.Member;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 

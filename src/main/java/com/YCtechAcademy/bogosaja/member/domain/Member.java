@@ -3,38 +3,41 @@ package com.YCtechAcademy.bogosaja.member.domain;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.persistence.*;
-
-import com.YCtechAcademy.bogosaja.global.domain.BaseEntity2;
-import com.YCtechAcademy.bogosaja.item.domain.Item;
-import com.YCtechAcademy.bogosaja.item.domain.LikeList;
 import com.YCtechAcademy.bogosaja.item.repository.LikeListRepository;
 import com.YCtechAcademy.bogosaja.member.dto.MemberDto;
-import lombok.Getter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.YCtechAcademy.bogosaja.global.domain.BaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @DynamicUpdate
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 @Table(name = "member")
-public class Member extends BaseEntity2 implements UserDetails {
+public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
-	@GeneratedValue(generator = "uuid-hibernate-generator")
-	@GenericGenerator(name = "uuid-hibernate-generator", strategy = "org.hibernate.id.UUIDGenerator")
-	@Column(columnDefinition = "BINARY(16)", updatable = false, nullable = false)
-	private UUID id;
+	@Column(name = "member_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	@Column(name="email", nullable = false, unique = true, columnDefinition = "varchar(50)")
+	@Column(name = "email", nullable = false, unique = true, columnDefinition = "varchar(50)")
 	private String email;
 
 	@Column(name = "password", nullable = false, unique = true, columnDefinition = "varchar(255)")
@@ -48,7 +51,7 @@ public class Member extends BaseEntity2 implements UserDetails {
 	private Role role;
 
 	@Column(name = "provider", columnDefinition = "varchar(40)")
-	private String provider; //어떤 OAuth인지(google, naver 등)
+	private String provider; // 어떤 OAuth인지(google, naver 등)
 
 	@Column(name = "provider_id", columnDefinition = "varchar(40)")
 	private String providerId; // 해당 OAuth 의 key(id)
@@ -56,6 +59,7 @@ public class Member extends BaseEntity2 implements UserDetails {
 	public void update(String nickname) {
 		this.nickname = nickname;
 	}
+
 	public void resetPassword(String password) {
 		this.password = password;
 	}
@@ -80,7 +84,7 @@ public class Member extends BaseEntity2 implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return email; //todo 추후검토
+		return email; // todo 추후검토
 	}
 
 	@Override

@@ -5,8 +5,6 @@ import com.YCtechAcademy.bogosaja.member.domain.Role;
 
 import lombok.*;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Builder
@@ -25,11 +23,11 @@ public class SignUpRequest {
 
 	public static Member toEntity(SignUpRequest signUpRequest) {
 		return Member.builder()
-			.email(signUpRequest.email)
-			.password(signUpRequest.password1)
-			.nickname(signUpRequest.nickname)
-			.role(signUpRequest.role)
-			.build();
+				.email(signUpRequest.email)
+				.password(signUpRequest.password1)
+				.nickname(signUpRequest.nickname)
+				.role(signUpRequest.role)
+				.build();
 	}
 
 }

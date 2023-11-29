@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface LikeListRepository extends JpaRepository<LikeList, Long> {
     Optional<LikeList> findByMemberAndItem(Member member, Item item);
+
     Optional<LikeList> findByMember(Member member);
 }

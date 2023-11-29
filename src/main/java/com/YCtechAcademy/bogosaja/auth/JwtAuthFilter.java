@@ -32,7 +32,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 		log.info("필터 실행 중");
 		Optional<String> accessToken = extractTokenFromCookie(request, "accessToken");
 		Optional<String> refreshToken = extractTokenFromCookie(request, "refreshToken");
@@ -41,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get()) == JwtCode.ACCESS) {
 			// 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
 			Authentication authentication = jwtTokenProvider.getAuthentication(accessToken.get());
-			log.info("auth: " +authentication);
+			log.info("auth: " + authentication);
 			// SecurityContext 에 Authentication 객체를 저장합니다.
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			log.info("유효한 토큰입니다.");
@@ -80,13 +81,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	private Optional<String> extractTokenFromCookie(HttpServletRequest request, String cookieName) {
 
-		if (request.getCookies() == null || request.getCookies().length == 0) return Optional.empty();
+		if (request.getCookies() == null || request.getCookies().length == 0)
+			return Optional.empty();
 
 		return Arrays.stream(request.getCookies())
-			.sequential()
-			.filter(cookie -> cookie.getName().equals(cookieName))
-			.map(Cookie::getValue)
-			.findFirst();
+				.sequential()
+				.filter(cookie -> cookie.getName().equals(cookieName))
+				.map(Cookie::getValue)
+				.findFirst();
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		String path = request.getServletPath();
 
 		// filter 에서 제외한 url 목록
-		String[] excludedPaths = { "/members/auth/signIn", "/members/auth/signUp", "/members/db"};
+		String[] excludedPaths = { "/members/auth/signIn", "/members/auth/signUp", "/members/db" };
 
 		for (String excludedPath : excludedPaths) {
 			if (path.startsWith(excludedPath)) {

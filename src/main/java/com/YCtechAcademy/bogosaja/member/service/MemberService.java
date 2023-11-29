@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import com.YCtechAcademy.bogosaja.item.repository.LikeListRepository;
 import com.YCtechAcademy.bogosaja.member.dto.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +27,6 @@ import com.YCtechAcademy.bogosaja.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -49,7 +47,7 @@ public class MemberService {
 	@Transactional
 	public Member signUp(SignUpRequest signUpRequest) {
 		this.validateDuplicateMember(signUpRequest);
-		if(!signUpRequest.getPassword1().equals(signUpRequest.getPassword2())) {
+		if (!signUpRequest.getPassword1().equals(signUpRequest.getPassword2())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
 		signUpRequest.setPassword1(passwordEncoder.encode(signUpRequest.getPassword1()));
@@ -73,10 +71,12 @@ public class MemberService {
 		try {
 			// 3. Login ID/PW 를 기반으로 Authentication 객체 생성
 			// 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email,
+					password);
 
 			// 4. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-			// authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+			// authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername
+			// 메서드가 실행
 			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 			// 5. 인증 정보를 기반으로 JWT 토큰 생성
@@ -141,10 +141,10 @@ public class MemberService {
 		member.update(updateRequest.nickname());
 	}
 
-	public List<MemberDto> findAll(){
+	public List<MemberDto> findAll() {
 		List<Member> memberList = memberRepository.findAll();
 		List<MemberDto> members = new ArrayList<>();
-		for (Member member : memberList){
+		for (Member member : memberList) {
 			members.add(member.toDto(member, likeListRepository));
 		}
 		return members;
