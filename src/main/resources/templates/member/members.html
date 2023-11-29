@@ -25,7 +25,7 @@
         <td th:text="${member.nickname}"></td>
         <td th:text="${member.role}"></td>
         <td>
-            <span th:each="item : ${member.likedItemNames}" th:text="${item}"></span>
+            <p th:each="item : ${member.likedItemNames}" th:text="${item}"></p>
         </td>
     </tr>
 </table>

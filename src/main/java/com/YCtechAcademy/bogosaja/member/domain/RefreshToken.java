@@ -15,7 +15,7 @@ import lombok.Setter;
 public class RefreshToken {
 
 	@Id
-	@Column(name = "refreshtoken_id")
+	@Column(name = "refreshtoken_id", updatable = false, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 

@@ -58,7 +58,7 @@
       })
       .then(data => {
 
-        const likeStateIcon = document.getElementById('likestate');
+        const likeStateIcon = document.getElementById('likestate'+ data.itemId);
         if (data.message) {
             alert("찜 추가");
             likeStateIcon.innerText = '♥';
@@ -105,7 +105,7 @@
             </div>
           </a>
           <span class="text-right mgt-50" th:itemId="${item.id}" onclick="toggleLike(this.getAttribute('itemId'));">
-            <i id="likestate" th:style="${'font-size: 2em'}" th:text="${isLiked[item.id]} ? '♥' : '♡'"></i>
+            <i th:id="'likestate' + ${item.id}" th:style="${'font-size: 2em'}" th:text="${isLiked[item.id]} ? '♥' : '♡'"></i>
           </span>
         </div>
       </div>

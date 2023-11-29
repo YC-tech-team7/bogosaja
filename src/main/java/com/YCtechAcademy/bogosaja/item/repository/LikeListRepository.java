@@ -6,11 +6,13 @@ import com.YCtechAcademy.bogosaja.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface LikeListRepository extends JpaRepository<LikeList, Long> {
     Optional<LikeList> findByMemberAndItem(Member member, Item item);
 
-    Optional<LikeList> findByMember(Member member);
+    Collection <LikeList> findByMember(Member member);
 }

@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseTimeEntity implements UserDetails {
 
 	@Id
-	@Column(name = "member_id")
+	@Column(name = "member_id", updatable = false, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 

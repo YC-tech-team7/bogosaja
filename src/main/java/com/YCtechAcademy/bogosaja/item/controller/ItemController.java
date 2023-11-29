@@ -199,7 +199,7 @@ public class ItemController {
         }
 
         boolean newLikeStatus = itemService.likes(member.getUsername(), itemId);
-        String responseJson = "{\"message\":" + newLikeStatus + "}";
+        String responseJson = "{\"message\":" + newLikeStatus + ", \"itemId\":" + itemId + "}";
 
         return ResponseEntity.ok().body(responseJson);
     }
