@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "item")
@@ -33,6 +35,9 @@ public class Item extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<ItemImg> itemImgs = new ArrayList<>();
 
     public void updateItem(ItemFormDto itemFormDto) {
         this.itemNm = itemFormDto.getItemNm();

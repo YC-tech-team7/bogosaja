@@ -33,6 +33,35 @@
         }
 
 
+        function confirmDelete() {
+            var confirmResult = confirm("게시물을 삭제하시겠습니까?");
+            if (confirmResult) {
+                var itemId = "${itemFormDto.id}"; // Thymeleaf 템플릿 변수 사용
+                deleteItem(itemId);
+            }
+        }
+
+        function deleteItem() {
+            var itemId = /*[[${itemFormDto.id}]]*/ null; // itemId를 가져오는 Thymeleaf 표현식
+            if (itemId == null || itemId === "") {
+                alert("유효하지 않은 아이템 ID입니다.");
+                return;
+            }
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/item/' + itemId,
+                success: function(data) {
+                    alert("게시물 삭제가 완료되었습니다.");
+                    window.location.href = "/"; // 삭제 후 홈페이지로 리다이렉트
+                },
+                error: function(error) {
+                    alert("게시물 삭제 중 에러가 발생하였습니다.");
+                }
+            });
+        }
+
+
     </script>
 
 </th:block>
@@ -118,6 +147,7 @@
         </div>
         <div th:unless="${#strings.isEmpty(itemFormDto.id)}" style="text-align: center">
             <button th:formaction="@{'/item/' + ${itemFormDto.id} }" type="submit" class="btn btn-primary">수정</button>
+            <button type="button" class="btn btn-primary" onclick="confirmDelete()" th:if="${not #strings.isEmpty(itemFormDto.id)}" data-item-id="${itemFormDto.id}">게시물 삭제</button>
         </div>
 
     </form>
