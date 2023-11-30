@@ -13,11 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.YCtechAcademy.bogosaja.auth.JwtTokenProvider;
@@ -97,7 +95,7 @@ public class MemberController {
         return "member/deleteForm";
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public String delete(@ModelAttribute DeleteRequest deleteRequest, @AuthenticationPrincipal Member member,
             HttpServletResponse response) {
         memberService.delete(deleteRequest, member);
@@ -121,13 +119,13 @@ public class MemberController {
         return "member/resetPasswordForm";
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     public String update(@ModelAttribute UpdateRequest updateRequest, @AuthenticationPrincipal Member member) {
         memberService.update(updateRequest, member);
         return "redirect:/";
     }
 
-    @PutMapping("/reset")
+    @PostMapping("/reset")
     public String update(@ModelAttribute ResetRequest resetRequest, @AuthenticationPrincipal Member member) {
         memberService.resetPw(resetRequest, member);
         return "redirect:/";
