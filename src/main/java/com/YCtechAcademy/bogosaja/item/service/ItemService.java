@@ -45,6 +45,7 @@ public class ItemService {
         Item item = itemFormDto.createItem();
         itemRepository.save(item);
 
+
         // 이미지 등록
         for (int i = 0; i < itemImgFileList.size(); i++) {
             ItemImg itemImg = new ItemImg();
@@ -143,6 +144,13 @@ public class ItemService {
     @Transactional(readOnly = true)
     public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getMainItemPage(itemSearchDto, pageable);
+    }
+
+
+    //상품 삭제
+    @Transactional
+    public void deleteByItemId(Long id) {
+        itemRepository.deleteById(id);
     }
 
 }

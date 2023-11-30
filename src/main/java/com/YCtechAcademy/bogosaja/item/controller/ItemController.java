@@ -8,15 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -203,5 +201,17 @@ public class ItemController {
 
         return ResponseEntity.ok().body(responseJson);
     }
+
+    //상품 삭제 기능 추가
+    @DeleteMapping(value = "/item/{itemId}")
+    public ResponseEntity<String> deleteItem(@PathVariable("itemId") Long itemId) {
+        try {
+            itemService.deleteByItemId(itemId);
+            return ResponseEntity.ok("게시물 삭제가 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시물 삭제 중 에러가 발생하였습니다.");
+        }
+    }
+
 
 }

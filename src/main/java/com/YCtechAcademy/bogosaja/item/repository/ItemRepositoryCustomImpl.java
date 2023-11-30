@@ -50,6 +50,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return QItem.item.createdAt.after(dateTime);
     }
 
+
+
     private BooleanExpression searchByLike(String searchBy, String searchQuery) {
 
         if (StringUtils.equals("itemNm", searchBy)) {
@@ -114,4 +116,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+
+
+
 }
