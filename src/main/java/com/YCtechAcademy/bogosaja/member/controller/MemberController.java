@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.YCtechAcademy.bogosaja.auth.JwtTokenProvider;
 import com.YCtechAcademy.bogosaja.auth.TokenInfo;
@@ -52,8 +53,13 @@ public class MemberController {
     }
 
     @PostMapping("/auth/signUp")
-    public String signUp(@ModelAttribute SignUpRequest signUpRequest) {
-        memberService.signUp(signUpRequest);
+    public String signUp(@ModelAttribute SignUpRequest signUpRequest, RedirectAttributes redirectAttributes) {
+        try {
+            memberService.signUp(signUpRequest);
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/members/auth/signUp";
+        }
         // 회원가입 완료 페이지
         return "redirect:/";
     }
@@ -65,14 +71,19 @@ public class MemberController {
     }
 
     @PostMapping("/auth/signIn")
-    public String signIn(@ModelAttribute SignInRequest signInRequest, HttpServletResponse response) {
+    public String signIn(@ModelAttribute SignInRequest signInRequest, HttpServletResponse response, RedirectAttributes redirectAttributes ) {
         log.info("email={}, password={}", signInRequest.email(), signInRequest.password());
-        TokenInfo tokenInfo = memberService.signIn(signInRequest.email(), signInRequest.password());
+        try {
+            TokenInfo tokenInfo = memberService.signIn(signInRequest.email(), signInRequest.password());
+            response.addCookie(jwtTokenProvider.generateCookie("refreshToken", tokenInfo.refreshToken()));
+            response.addCookie(jwtTokenProvider.generateCookie("accessToken", tokenInfo.accessToken()));
+            return "redirect:/";
 
-        response.addCookie(jwtTokenProvider.generateCookie("refreshToken", tokenInfo.refreshToken()));
-        response.addCookie(jwtTokenProvider.generateCookie("accessToken", tokenInfo.accessToken()));
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/members/auth/signIn";
+        }
 
-        return "redirect:/";
     }
 
     @PostMapping("/auth/signOut")
@@ -88,9 +99,10 @@ public class MemberController {
     }
 
     @GetMapping("/delete")
-    public String deleteForm(@AuthenticationPrincipal Member member) {
+    public String deleteForm(@AuthenticationPrincipal Member member, RedirectAttributes redirectAttributes) {
         if (Objects.equals(member.getProvider(), "google")) {
-            throw new IllegalArgumentException("구글 회원은 회원탈퇴가 불가능합니다."); // todo 구글 회원은 회원탈퇴 따로..?
+            redirectAttributes.addAttribute("errorMessage", "구글 회원은 회원탈퇴가 불가능합니다.");
+            return "redirect:/mypage";
         }
         return "member/deleteForm";
     }
@@ -112,12 +124,15 @@ public class MemberController {
     }
 
     @GetMapping("/reset")
-    public String resetForm(@AuthenticationPrincipal Member member) {
+    public String resetForm(@AuthenticationPrincipal Member member, RedirectAttributes redirectAttributes) {
         if (Objects.equals(member.getProvider(), "google")) {
-            throw new IllegalArgumentException("구글 회원은 회원정보 수정이 불가능합니다.");
+            redirectAttributes.addAttribute("errorMessage", "구글 회원은 비밀번호 수정이 불가능합니다.");
+            return "redirect:/mypage";
         }
         return "member/resetPasswordForm";
     }
+
+
 
     @PostMapping("/update")
     public String update(@ModelAttribute UpdateRequest updateRequest, @AuthenticationPrincipal Member member) {
