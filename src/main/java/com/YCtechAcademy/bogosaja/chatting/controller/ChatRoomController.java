@@ -46,6 +46,7 @@ public class ChatRoomController {
     }
 
     // 채팅방 생성
+
     @PostMapping("/chat/createroom")
     public ModelAndView createRoom(@RequestBody RoomRequest roomRequest, ModelAndView mav) {
 
@@ -58,7 +59,6 @@ public class ChatRoomController {
         mav.setViewName("jsonView");
         return mav;
     }
-
     // 채팅에 참여한 유저 리스트 반환
     @PostMapping("/chat/userlist")
     public ModelAndView userList(@RequestBody RoomRequest roomRequest, ModelAndView mav) {

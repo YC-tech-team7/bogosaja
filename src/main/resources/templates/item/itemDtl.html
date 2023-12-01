@@ -148,7 +148,7 @@
 
             var url = "/chat/createroom";
             var paramData = {
-                roomName: "채팅방 이름" // 원하는 채팅방 이름을 여기에 입력
+                roomName: "채팅방 이름"
             };
 
             var param = JSON.stringify(paramData);
@@ -159,7 +159,6 @@
                 contentType: "application/json",
                 data: param,
                 beforeSend: function (xhr) {
-                    /* CSRF를 비활성화했다면 헤더를 설정하지 않도록 체크 */
                     if (token) {
                         xhr.setRequestHeader("X-CSRF-TOKEN", token);
                     }
@@ -167,7 +166,7 @@
                 dataType: "json",
                 cache: false,
                 success: function (result, status) {
-                    // 채팅방 생성 성공 시, 화면 전환 코드만 실행
+                    alert('채팅방이 생성되었습니다. 채팅 ID는 ' + result.roomId + '입니다.');
                     location.href = '/chat';
                 },
                 error: function (jqXHR, status, error) {
@@ -180,6 +179,7 @@
                 }
             });
         }
+
 
         function updateItem() {
             var itemId = $("#itemId").val();
