@@ -176,16 +176,14 @@ public class ItemController {
 
         boolean isLiked = false;
 
-        if (member1 != null) {
-            Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
-            isLiked = itemService.is_likes(member.getUsername(), itemId);
-        }
-
+        Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
+        isLiked = itemService.is_likes(member.getUsername(), itemId);
         model.addAttribute("isLiked", isLiked);
         model.addAttribute("item", itemFormDto);
         return "item/itemDtl";
     }
 
+    // 좋아요 추가/삭제 기능
     @PostMapping(value = "/item/like/{itemId}")
     public ResponseEntity<?> like(@AuthenticationPrincipal Member member, @PathVariable("itemId") Long itemId)
             throws NotFoundException {

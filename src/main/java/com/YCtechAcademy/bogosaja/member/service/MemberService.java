@@ -1,9 +1,14 @@
 package com.YCtechAcademy.bogosaja.member.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.YCtechAcademy.bogosaja.item.domain.Item;
+import com.YCtechAcademy.bogosaja.item.domain.LikeList;
+import com.YCtechAcademy.bogosaja.item.repository.ItemRepository;
+import javassist.NotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +45,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final LikeListRepository likeListRepository;
+	private final ItemRepository itemRepository;
 
 	private void validateDuplicateMember(SignUpRequest signUpRequest) {
 		Optional<Member> member = memberRepository.findByEmail(signUpRequest.getEmail());
@@ -121,7 +127,12 @@ public class MemberService {
 		RefreshToken refreshToken = refreshTokenRepository.findByEmail(member1.getUsername()).orElseThrow();
 		refreshTokenRepository.delete(refreshToken);
 		Member member = memberRepository.findByEmail(member1.getUsername()).orElseThrow();
-		memberRepository.delete(member); // todo : 데이터삭제? 삭제필드 수정? 중 어떻게
+		Collection<LikeList> likeListCollection = likeListRepository.findByMember(member);
+
+		likeListCollection
+				.forEach(likeListRepository::delete);
+
+		memberRepository.delete(member);
 	}
 
 	@Transactional
