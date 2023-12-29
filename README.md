@@ -12,7 +12,6 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## ⏲️ 개발 기간
 
----
 
 - 2023.10.26(목) ~ 2023.12.02(토)
 - 기획서 및 ERD 작성
@@ -21,7 +20,6 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## 💾 7조 팀 소개
 
----
 
 - **이강원(팀장)**: 상품 게시글 API 개발, 사이트 화면 구현
 - **강슬미** : 웹 페이지 OAuth2 로그인 기능 개발, 상품 찜하기 기능 구현
@@ -30,7 +28,6 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## 💻 개발환경
 
----
 
 - **Version** : Java 17
 - **IDE** : IntelliJ
@@ -39,14 +36,12 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## ⚙️ 기술 스택
 
----
 
 - **DataBase** : MySQL, H2dataBase
 - **아이디어 회의** : Slack, Zoom, Notion
 
 ## 주요 기능
 
----
 
 - 회원 관리 기능
     - 사이트 기본 로그인/로그아웃
@@ -64,9 +59,7 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## ✒️ API 명세서
 
----
 
 
 ## ✒️ ERD 설계도
 
----
