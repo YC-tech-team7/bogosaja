@@ -54,8 +54,8 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 - 라이브 스트리밍 기능(구현 예정)
 
 ## ✒️ API 명세서
-
-
+![API명세서](https://github.com/YC-tech-team7/bogosaja/blob/main/images/API%EB%AA%85%EC%84%B8%EC%84%9C.png)
 
 ## ✒️ ERD 설계도
+![ERD설계](https://github.com/YC-tech-team7/bogosaja/blob/main/images/ERD%EC%84%A4%EA%B3%84.png) 
 
