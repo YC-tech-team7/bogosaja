@@ -1,6 +1,6 @@
 # BOGOSAJA(보고사자) 프로젝트
 
-Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Boot를 활용한 "실시간 라이브 기능을 도입한 중고 거래 플래폼 웹페이지”를 구현하였습니다.
+Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Boot를 활용한 "(실시간 라이브 기능을 도입한) 중고 거래 플래폼 웹페이지”를 구현하였습니다.
 
 ## 👩🏻‍💻 프로젝트 소개
 
@@ -32,7 +32,6 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## ⚙️ 기술 스택
 
-
 - **DataBase** : MySQL, H2dataBase
 - **아이디어 회의** : Slack, Zoom, Notion
 
@@ -58,4 +57,5 @@ Yc Tech Academy 7조에서 진행한 팀프로젝트입니다. Java와 Spring Bo
 
 ## ✒️ ERD 설계도
 ![ERD설계](https://github.com/YC-tech-team7/bogosaja/blob/main/images/ERD%EC%84%A4%EA%B3%84.png) 
+
 
